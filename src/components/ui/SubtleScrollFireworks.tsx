@@ -4,9 +4,13 @@ import { useEffect, useRef } from 'react';
  * SubtleScrollFireworks
  * ─────────────────────
  * A lightweight <canvas> that releases slow, soft fireworks ONLY while the
- * visitor scrolls inside the first screen (the Hero). Nothing fires on load,
- * nothing fires further down the page, and the animation loop sleeps whenever
- * no particle is alive, so it costs nothing while idle.
+ * visitor scrolls. Nothing fires on load, and the animation loop sleeps
+ * whenever no particle is alive, so it costs nothing while idle.
+ *
+ * • scope="hero" — fires only inside the first screen (Gala Overview).
+ * • scope="page" — fires anywhere on the page (Alumni Showcase). It arms
+ *   `armDelay` ms after mount and then waits for a real gesture (wheel, touch,
+ *   scroll keys), so the automatic jump of a QR deep link never sets it off.
  *
  * • Palette: Champagne #C9A66B · Ivory #F3EBDD · subtle Sky Blue #00A9E0 accents
  * • Fewer particles on small / touch screens; DPR capped at 2
@@ -40,12 +44,18 @@ interface Rocket {
 }
 
 interface Props {
-  /** Disable completely (e.g. while another tab is showing). */
+  /** Disable completely. */
   enabled?: boolean;
-  /** Fraction of the viewport height that counts as “Hero”. */
+  /** Where scrolling may release fireworks. */
+  scope?: 'hero' | 'page';
+  /** Fraction of the viewport height that counts as “Hero” (scope="hero"). */
   heroFraction?: number;
+  /** Quiet period after mount before scroll is listened to (ms). */
+  armDelay?: number;
   className?: string;
 }
+
+const SCROLL_KEYS = new Set(['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' ', 'Spacebar']);
 
 function pickColor(): RGB {
   const r = Math.random();
@@ -56,7 +66,9 @@ function pickColor(): RGB {
 
 export default function SubtleScrollFireworks({
   enabled = true,
+  scope = 'hero',
   heroFraction = 1,
+  armDelay = 0,
   className = 'fixed inset-0 z-0 pointer-events-none opacity-65',
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -77,6 +89,10 @@ export default function SubtleScrollFireworks({
     let lastBurst = 0;
     let lastY = window.scrollY;
     let accumulated = 0;
+    // scope="page": silent until the quiet period ends AND the guest scrolls by hand.
+    const gated = scope === 'page';
+    let armed = !gated && armDelay <= 0;
+    let userIntent = !gated;
     let w = 0;
     let h = 0;
 
@@ -189,8 +205,12 @@ export default function SubtleScrollFireworks({
       const y = window.scrollY;
       const delta = Math.abs(y - lastY);
       lastY = y;
-      // Only inside the Hero (first screen).
-      if (y > window.innerHeight * heroFraction) {
+      if (!armed || !userIntent) {
+        accumulated = 0;
+        return;
+      }
+      // scope="hero": only inside the first screen.
+      if (scope === 'hero' && y > window.innerHeight * heroFraction) {
         accumulated = 0;
         return;
       }
@@ -214,18 +234,37 @@ export default function SubtleScrollFireworks({
       }
     };
 
+    const onIntent = (e: Event) => {
+      if (!armed) return;
+      if (e instanceof KeyboardEvent && !SCROLL_KEYS.has(e.key)) return;
+      userIntent = true;
+      lastY = window.scrollY;
+    };
+    const intentEvents = ['wheel', 'touchmove', 'keydown'] as const;
+
+    const armTimer = armed
+      ? 0
+      : window.setTimeout(() => {
+          armed = true;
+          lastY = window.scrollY; // discard whatever the automatic landing scrolled
+          accumulated = 0;
+        }, armDelay);
+
     resize();
     window.addEventListener('resize', resize);
     window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
+    if (gated) intentEvents.forEach((ev) => window.addEventListener(ev, onIntent, { passive: true }));
 
     return () => {
+      window.clearTimeout(armTimer);
+      if (gated) intentEvents.forEach((ev) => window.removeEventListener(ev, onIntent));
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
       window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [enabled, heroFraction]);
+  }, [enabled, scope, heroFraction, armDelay]);
 
   if (!enabled) return null;
   return <canvas ref={canvasRef} aria-hidden="true" className={className} />;
