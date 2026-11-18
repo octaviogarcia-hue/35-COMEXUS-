@@ -17,6 +17,9 @@ export default {
         display: ['Charlon', 'Oranienbaum', 'Georgia', 'serif'],
         sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
       },
+      transitionTimingFunction: {
+        lux: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
       letterSpacing: {
         legacy: '0.14em',
         eyebrow: '0.32em',
