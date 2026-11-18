@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { ALUMNI_LINKS, type Musician, type Photographer, type ProfileId } from '../../data/galaData';
 import { shareableUrl } from '../../hooks/useHashRoute';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { EASE_LUX } from '../../lib/motion';
 import ImageWithFallback from '../ui/ImageWithFallback';
 import Ornament, { Eyebrow } from '../ui/Ornament';
-import Reveal from '../ui/Reveal';
+import Reveal, { RevealGroup, RevealItem } from '../ui/Reveal';
 
 interface Props {
   onBack: () => void;
@@ -66,17 +67,18 @@ function PhotographerCard({ person, index, highlighted }: { person: Photographer
   return (
     <Reveal
       as="article"
-      delay={index * 0.08}
+      delay={index * 0.1}
       id={person.id}
       aria-labelledby={`${person.id}-name`}
-      className={`relative flex scroll-mt-[calc(var(--nav-h)+1rem)] flex-col rounded-[2px] border bg-[#F8F3EA] shadow-[0_24px_50px_-34px_rgba(0,43,73,0.6)] transition-[box-shadow,border-color] duration-700 ${
+      className={`group/card relative flex scroll-mt-[calc(var(--nav-h)+1rem)] flex-col rounded-[2px] border bg-[#F8F3EA] shadow-[0_24px_50px_-34px_rgba(0,43,73,0.6)] transition-[box-shadow,border-color] duration-700 ease-lux hover:shadow-[0_34px_60px_-34px_rgba(0,43,73,0.7)] ${
         highlighted ? 'border-champagne ring-2 ring-champagne/60 ring-offset-4 ring-offset-ivory' : 'border-champagne/45'
       }`}
     >
-      <div className="relative">
+      <div className="relative overflow-hidden rounded-t-[2px]">
         <ImageWithFallback
           src={person.image}
           alt={person.name}
+          zoom
           className="aspect-square w-full sm:aspect-[4/5]"
           fallback={<PortraitFallback label={t.alumni.photoPending} />}
         />
@@ -88,32 +90,39 @@ function PhotographerCard({ person, index, highlighted }: { person: Photographer
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-6 sm:p-7">
-        <h3 id={`${person.id}-name`} className="font-display text-[1.75rem] leading-tight tracking-[0.02em] text-navy">
-          {person.name}
-        </h3>
-        <p className="mt-2 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-legacy">{person.program}</p>
-        <p className="mt-1 text-[0.82rem] text-navy/60">{person.cohort}</p>
-        <p className="mt-4 text-[0.95rem] leading-relaxed text-navy/80">{person.bio}</p>
+      {/* Card copy arrives line by line after the frame */}
+      <RevealGroup stagger={0.09} delay={0.25 + index * 0.1} className="flex flex-1 flex-col p-6 sm:p-7">
+        <RevealItem y={14}>
+          <h3 id={`${person.id}-name`} className="font-display text-[1.75rem] leading-tight tracking-[0.02em] text-navy">
+            {person.name}
+          </h3>
+          <p className="mt-2 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-legacy">{person.program}</p>
+          <p className="mt-1 text-[0.82rem] text-navy/60">{person.cohort}</p>
+        </RevealItem>
+        <RevealItem as="p" y={14} className="mt-4 text-[0.95rem] leading-relaxed text-navy/80">
+          {person.bio}
+        </RevealItem>
 
-        <blockquote className="relative mt-6 border-l-2 border-champagne pl-4">
-          <Quote className="absolute -left-[0.6rem] -top-3 h-5 w-5 rounded-full bg-[#F8F3EA] p-0.5 text-champagne" strokeWidth={1.5} aria-hidden="true" />
-          <p className="font-display text-[1.1rem] italic leading-snug text-navy">“{person.quote}”</p>
-        </blockquote>
+        <RevealItem y={14} className="relative mt-6">
+          <blockquote className="relative border-l-2 border-champagne pl-4">
+            <Quote className="absolute -left-[0.6rem] -top-3 h-5 w-5 rounded-full bg-[#F8F3EA] p-0.5 text-champagne" strokeWidth={1.5} aria-hidden="true" />
+            <p className="font-display text-[1.1rem] italic leading-snug text-navy">“{person.quote}”</p>
+          </blockquote>
+        </RevealItem>
 
-        <div className="mt-auto pt-7">
+        <RevealItem y={10} className="mt-auto pt-7">
           <a
             href={link || '#'}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy px-6 py-3.5 text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ivory transition-colors hover:bg-legacy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne"
+            className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy px-6 py-3.5 text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ivory transition-colors duration-500 ease-lux hover:bg-legacy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne"
           >
             <Camera className="h-4 w-4 text-champagne" strokeWidth={1.5} aria-hidden="true" />
             {t.alumni.photography.cta}
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.5} aria-hidden="true" />
+            <ArrowUpRight className="h-4 w-4 transition-transform duration-500 ease-lux group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.5} aria-hidden="true" />
           </a>
-        </div>
-      </div>
+        </RevealItem>
+      </RevealGroup>
     </Reveal>
   );
 }
@@ -138,7 +147,7 @@ function MusicianFeature({ person, highlighted }: { person: Musician; highlighte
       as="article"
       id={person.id}
       aria-labelledby="musician-name"
-      className={`relative grid scroll-mt-[calc(var(--nav-h)+1rem)] overflow-hidden rounded-[2px] border bg-navy/60 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] ${
+      className={`group/card relative grid scroll-mt-[calc(var(--nav-h)+1rem)] overflow-hidden rounded-[2px] border bg-navy/60 transition-[border-color] duration-700 ease-lux lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] ${
         highlighted ? 'border-champagne ring-2 ring-champagne/60 ring-offset-4 ring-offset-navy' : 'border-champagne/35'
       }`}
     >
@@ -146,6 +155,7 @@ function MusicianFeature({ person, highlighted }: { person: Musician; highlighte
         <ImageWithFallback
           src={person.image}
           alt={person.name}
+          zoom
           className="aspect-square h-full w-full sm:aspect-[16/11] lg:aspect-auto lg:min-h-[34rem]"
           fallback={<PortraitFallback label={t.alumni.photoPending} tone="navy" />}
         />
@@ -155,26 +165,30 @@ function MusicianFeature({ person, highlighted }: { person: Musician; highlighte
         </span>
       </div>
 
-      <div className="relative p-6 sm:p-10 lg:p-12">
+      <RevealGroup stagger={0.1} delay={0.25} className="relative p-6 sm:p-10 lg:p-12">
         <span aria-hidden="true" className="pointer-events-none absolute -right-4 -top-6 select-none font-script text-[9rem] leading-none text-champagne/[0.07]">
           ♪
         </span>
-        <Eyebrow className="text-sky">{m.eyebrow}</Eyebrow>
-        <h3 id="musician-name" className="mt-3 font-display text-[2.2rem] leading-tight tracking-[0.02em] text-ivory sm:text-5xl">
-          {person.name}
-        </h3>
-        <p className="mt-3 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-champagne">{person.program}</p>
-        <p className="mt-1 text-[0.85rem] text-ivory/55">{person.cohort}</p>
+        <RevealItem y={14}>
+          <Eyebrow className="text-sky">{m.eyebrow}</Eyebrow>
+          <h3 id="musician-name" className="mt-3 font-display text-[2.2rem] leading-tight tracking-[0.02em] text-ivory sm:text-5xl">
+            {person.name}
+          </h3>
+          <p className="mt-3 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-champagne">{person.program}</p>
+          <p className="mt-1 text-[0.85rem] text-ivory/55">{person.cohort}</p>
+        </RevealItem>
 
-        <p className="mt-6 text-[1rem] leading-relaxed text-ivory/85">{person.bio}</p>
+        <RevealItem as="p" y={14} className="mt-6 text-[1rem] leading-relaxed text-ivory/85">
+          {person.bio}
+        </RevealItem>
 
-        <div className="mt-7 border-t border-champagne/20 pt-6">
+        <RevealItem y={14} className="mt-7 border-t border-champagne/20 pt-6">
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-champagne">{m.careerLabel}</p>
           <p className="mt-3 text-[0.97rem] leading-relaxed text-ivory/75">{person.career}</p>
-        </div>
+        </RevealItem>
 
         {items.length > 0 && (
-          <div className="mt-8">
+          <RevealItem y={10} className="mt-8">
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-champagne">{m.linksLabel}</p>
             <ul className="mt-4 flex flex-wrap gap-2.5">
               {items.map(({ key, href, icon: Icon }) => (
@@ -183,7 +197,7 @@ function MusicianFeature({ person, highlighted }: { person: Musician; highlighte
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-champagne/45 px-4 py-2 text-[0.8rem] font-medium tracking-[0.06em] text-ivory transition-colors hover:border-champagne hover:bg-champagne hover:text-navy"
+                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-champagne/45 px-4 py-2 text-[0.8rem] font-medium tracking-[0.06em] text-ivory transition-colors duration-500 ease-lux hover:border-champagne hover:bg-champagne hover:text-navy"
                   >
                     <Icon className="h-4 w-4" strokeWidth={1.4} aria-hidden="true" />
                     {m.linkLabels[key]}
@@ -191,9 +205,9 @@ function MusicianFeature({ person, highlighted }: { person: Musician; highlighte
                 </li>
               ))}
             </ul>
-          </div>
+          </RevealItem>
         )}
-      </div>
+      </RevealGroup>
     </Reveal>
   );
 }
@@ -226,7 +240,7 @@ export default function AlumniView({ onBack, onJump, highlighted }: Props) {
               {a.back}
             </button>
           </div>
-          <motion.div initial={reduce ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
+          <motion.div initial={reduce ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE_LUX }}>
             <Eyebrow className="mt-6 text-champagne">{a.eyebrow}</Eyebrow>
             <h1 className="mt-4 font-display text-[2.6rem] uppercase leading-none tracking-legacy text-ivory sm:text-6xl" style={{ paddingLeft: '0.14em' }}>
               {a.title}

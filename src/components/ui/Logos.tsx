@@ -47,15 +47,15 @@ export function Comexus35Mark({ tone = 'light', className = 'h-12' }: { tone?: T
 export function Fulbright80Mark({ tone = 'light', className = 'h-12' }: { tone?: Tone; className?: string }) {
   const c = tone === 'light' ? '#FFFFFF' : '#003DA5';
   return (
-    <svg viewBox="0 0 176 56" className={className} role="img" aria-label="Fulbright Program 80th Anniversary">
-      <text x="2" y="30" fontFamily="'Plus Jakarta Sans', sans-serif" fontWeight="700" fontSize="21" letterSpacing="3.2" fill={c}>
+    <svg viewBox="0 0 190 56" className={className} role="img" aria-label="Fulbright Program 80th Anniversary">
+      <text x="2" y="30" fontFamily="'Plus Jakarta Sans', sans-serif" fontWeight="700" fontSize="18" letterSpacing="2.4" fill={c}>
         FULBRIGHT
       </text>
-      <line x1="2" y1="38" x2="118" y2="38" stroke={c} strokeWidth="0.8" opacity="0.6" />
+      <line x1="2" y1="38" x2="132" y2="38" stroke={c} strokeWidth="0.8" opacity="0.6" />
       <text x="2" y="50" fontFamily="'Plus Jakarta Sans', sans-serif" fontSize="7.4" letterSpacing="2" fill={c} opacity="0.85">
         PROGRAM · 1946–2026
       </text>
-      <text x="130" y="44" fontFamily="Oranienbaum, Georgia, serif" fontSize="36" fill={c}>
+      <text x="146" y="44" fontFamily="Oranienbaum, Georgia, serif" fontSize="36" fill={c}>
         80
       </text>
     </svg>

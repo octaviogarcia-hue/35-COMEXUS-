@@ -89,3 +89,118 @@
     }
   }
 }
+
+/* ──────────────────────────── Luxury motion layer ──────────────────────────── */
+@layer components {
+  /* Metallic shimmer: a duplicate of the text, clipped to the glyphs, with a pale
+     gold highlight that sweeps across once every ~7 s and rests in between. */
+  .shimmer-text {
+    position: relative;
+    display: inline-block;
+  }
+  .shimmer-text__sweep {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    color: transparent;
+    background-image: linear-gradient(
+      105deg,
+      transparent 0%,
+      transparent 42%,
+      rgba(255, 246, 222, 0.95) 50%,
+      transparent 58%,
+      transparent 100%
+    );
+    background-size: 300% 100%;
+    background-repeat: no-repeat;
+    background-position: 120% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: gold-shimmer var(--shimmer-period, 7s) cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    animation-delay: var(--shimmer-delay, 2.4s);
+  }
+  @keyframes gold-shimmer {
+    0% {
+      background-position: 120% 0;
+    }
+    28%,
+    100% {
+      background-position: -20% 0;
+    }
+  }
+
+  /* Ambient aura behind the hero — slow breathing, only while at the top. */
+  .hero-aura {
+    animation: aura-breathe 9s ease-in-out infinite;
+    transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, opacity;
+  }
+  .hero-aura[data-idle='false'] {
+    animation-play-state: paused;
+    opacity: 0.35;
+  }
+  @keyframes aura-breathe {
+    0%,
+    100% {
+      transform: translate3d(-50%, 0, 0) scale(0.92);
+      opacity: 0.55;
+    }
+    50% {
+      transform: translate3d(-50%, -2%, 0) scale(1.06);
+      opacity: 1;
+    }
+  }
+
+  /* Soft champagne halo on the active program time. */
+  .glow-breathe {
+    animation: glow-breathe 4.2s ease-in-out infinite;
+  }
+  @keyframes glow-breathe {
+    0%,
+    100% {
+      box-shadow: 0 0 0 4px rgba(201, 166, 107, 0.08), 0 0 16px 2px rgba(201, 166, 107, 0.28);
+    }
+    50% {
+      box-shadow: 0 0 0 7px rgba(201, 166, 107, 0.05), 0 0 28px 6px rgba(201, 166, 107, 0.42);
+    }
+  }
+
+  /* Gradient glint that travels along a card's 1px border on hover / focus. */
+  .edge-glint {
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 30%, rgba(201, 166, 107, 0.95) 46%, rgba(255, 246, 222, 0.9) 50%, rgba(201, 166, 107, 0.95) 54%, transparent 70%)
+      no-repeat;
+    background-size: 260% 100%;
+    background-position: 130% 0;
+    opacity: 0;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-position 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .group\/card:hover .edge-glint,
+  .group\/card:focus-within .edge-glint,
+  .group\/card:active .edge-glint {
+    opacity: 1;
+    background-position: -30% 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer-text__sweep {
+      display: none;
+    }
+    .hero-aura,
+    .glow-breathe {
+      animation: none;
+    }
+    .edge-glint {
+      transition: opacity 0.2s linear;
+      background-position: 50% 0;
+    }
+  }
+}

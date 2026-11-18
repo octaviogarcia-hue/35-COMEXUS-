@@ -1,11 +1,11 @@
-import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { ImageIcon } from 'lucide-react';
 import { useRef } from 'react';
 import type { TimelineItem } from '../../data/galaData';
 import { useLanguage } from '../../i18n/LanguageContext';
 import ImageWithFallback from '../ui/ImageWithFallback';
 import Ornament, { Eyebrow } from '../ui/Ornament';
-import Reveal from '../ui/Reveal';
+import Reveal, { DrawLine, RevealGroup, RevealItem } from '../ui/Reveal';
 
 function ArchivalFallback({ year, label }: { year: string; label: string }) {
   return (
@@ -27,6 +27,30 @@ function ArchivalFallback({ year, label }: { year: string; label: string }) {
   );
 }
 
+/**
+ * 4:3 archival frame whose image drifts a few percent against the scroll.
+ * The inner layer is taller than the frame, so the edges never show.
+ */
+function ParallaxPhoto({ item, photoPending }: { item: TimelineItem; photoPending: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const y = useTransform(scrollYProgress, [0, 1], reduce ? ['0%', '0%'] : ['-5%', '5%']);
+  return (
+    <div ref={ref} className="relative aspect-[4/3] w-full overflow-hidden rounded-[2px] shadow-[0_24px_50px_-28px_rgba(0,43,73,0.6)]">
+      <motion.div style={{ y }} className="absolute inset-x-0 -inset-y-[7%] will-change-transform">
+        <ImageWithFallback
+          src={item.image}
+          alt={item.imageAlt}
+          className="h-full w-full"
+          imgClassName="grayscale-[35%] sepia-[15%]"
+          fallback={<ArchivalFallback year={item.id} label={photoPending} />}
+        />
+      </motion.div>
+    </div>
+  );
+}
+
 function Milestone({ item, index, photoPending }: { item: TimelineItem; index: number; photoPending: string }) {
   const flip = index % 2 === 1;
   return (
@@ -42,6 +66,7 @@ function Milestone({ item, index, photoPending }: { item: TimelineItem; index: n
       <Reveal
         className={`pb-8 md:row-start-1 md:pb-20 ${flip ? 'md:col-start-3 md:pl-10' : 'md:col-start-1 md:pr-10 md:text-right'}`}
       >
+        <DrawLine className={`mb-5 w-full max-w-[14rem] origin-left ${flip ? '' : 'md:ml-auto md:origin-right'}`} />
         <p className="font-display text-[1.65rem] leading-none tracking-[0.04em] text-legacy sm:text-4xl">{item.year}</p>
         <h3 className="mt-3 text-lg font-semibold leading-snug text-navy sm:text-xl">{item.title}</h3>
         <p className="mt-3 text-[0.97rem] leading-relaxed text-navy/80">{item.text}</p>
@@ -53,13 +78,7 @@ function Milestone({ item, index, photoPending }: { item: TimelineItem; index: n
         className={`col-start-2 pb-14 md:row-start-1 md:pb-20 ${flip ? 'md:col-start-1 md:pr-10' : 'md:col-start-3 md:pl-10'}`}
       >
         <figure className="relative">
-          <ImageWithFallback
-            src={item.image}
-            alt={item.imageAlt}
-            className="aspect-[4/3] w-full rounded-[2px] shadow-[0_24px_50px_-28px_rgba(0,43,73,0.6)]"
-            imgClassName="grayscale-[35%] sepia-[15%]"
-            fallback={<ArchivalFallback year={item.id} label={photoPending} />}
-          />
+          <ParallaxPhoto item={item} photoPending={photoPending} />
           <span aria-hidden="true" className="pointer-events-none absolute -inset-2 rounded-[2px] border border-champagne/50" />
         </figure>
       </Reveal>
@@ -100,27 +119,43 @@ export default function OurStory() {
           </ol>
         </div>
 
-        {/* A LEGACY IN MOTION */}
-        <Reveal className="relative mx-auto mt-6 max-w-4xl overflow-hidden rounded-[2px] bg-navy px-6 py-14 text-center text-ivory sm:px-14 sm:py-20">
-          <span
+        {/* A LEGACY IN MOTION — frame first, then each line in sequence */}
+        <RevealGroup
+          stagger={0.16}
+          delay={0.15}
+          className="relative mx-auto mt-6 max-w-4xl overflow-hidden rounded-[2px] bg-navy px-6 py-14 text-center text-ivory sm:px-14 sm:py-20"
+        >
+          <RevealItem
+            y={0}
             aria-hidden="true"
             className="pointer-events-none absolute -right-6 -top-10 select-none font-display text-[11rem] leading-none text-champagne/[0.08] sm:text-[18rem]"
           >
             35
-          </span>
+          </RevealItem>
           <span aria-hidden="true" className="pointer-events-none absolute inset-3 border border-champagne/25" />
-          <Eyebrow className="relative text-champagne">{s.closing.eyebrow}</Eyebrow>
+          <RevealItem>
+            <Eyebrow className="relative text-champagne">{s.closing.eyebrow}</Eyebrow>
+          </RevealItem>
           <div className="relative mx-auto mt-6 max-w-2xl space-y-4 text-pretty text-[1rem] leading-relaxed text-ivory/80 sm:text-[1.07rem]">
             {s.closing.paragraphs.map((p) => (
-              <p key={p.slice(0, 24)}>{p}</p>
+              <RevealItem as="p" key={p.slice(0, 24)}>
+                {p}
+              </RevealItem>
             ))}
           </div>
-          <Ornament className="relative mt-8" />
-          <p className="relative mx-auto mt-7 max-w-2xl text-balance font-display text-[1.6rem] leading-tight tracking-[0.03em] text-champagne sm:text-[2.2rem]">
+          <RevealItem y={0} className="relative mt-8">
+            <Ornament />
+          </RevealItem>
+          <RevealItem
+            as="p"
+            className="relative mx-auto mt-7 max-w-2xl text-balance font-display text-[1.6rem] leading-tight tracking-[0.03em] text-champagne sm:text-[2.2rem]"
+          >
             {s.closing.highlight}
-          </p>
-          <p className="relative mt-5 font-script text-[2.6rem] leading-none text-ivory sm:text-6xl">{s.closing.signoff}</p>
-        </Reveal>
+          </RevealItem>
+          <RevealItem as="p" y={14} className="relative mt-5 font-script text-[2.6rem] leading-none text-ivory sm:text-6xl">
+            {s.closing.signoff}
+          </RevealItem>
+        </RevealGroup>
       </div>
     </section>
   );
