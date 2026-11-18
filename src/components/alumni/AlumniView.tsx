@@ -70,8 +70,8 @@ function PhotographerCard({ person, index, highlighted }: { person: Photographer
       delay={index * 0.1}
       id={person.id}
       aria-labelledby={`${person.id}-name`}
-      className={`group/card relative flex scroll-mt-[calc(var(--nav-h)+1rem)] flex-col rounded-[2px] border bg-[#F8F3EA] shadow-[0_24px_50px_-34px_rgba(0,43,73,0.6)] transition-[box-shadow,border-color] duration-700 ease-lux hover:shadow-[0_34px_60px_-34px_rgba(0,43,73,0.7)] ${
-        highlighted ? 'border-champagne ring-2 ring-champagne/60 ring-offset-4 ring-offset-ivory' : 'border-champagne/45'
+      className={`group/card relative flex scroll-mt-[calc(var(--nav-h)+1rem)] flex-col rounded-[2px] border bg-[#F8F3EA] shadow-[0_24px_50px_-30px_rgba(0,0,0,0.7)] transition-[box-shadow,border-color] duration-700 ease-lux hover:shadow-[0_34px_60px_-30px_rgba(0,0,0,0.8)] ${
+        highlighted ? 'border-champagne ring-2 ring-champagne/60 ring-offset-4 ring-offset-navy' : 'border-champagne/45'
       }`}
     >
       <div className="relative overflow-hidden rounded-t-[2px]">
@@ -147,7 +147,7 @@ function MusicianFeature({ person, highlighted }: { person: Musician; highlighte
       as="article"
       id={person.id}
       aria-labelledby="musician-name"
-      className={`group/card relative grid scroll-mt-[calc(var(--nav-h)+1rem)] overflow-hidden rounded-[2px] border bg-navy/60 transition-[border-color] duration-700 ease-lux lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] ${
+      className={`group/card relative grid scroll-mt-[calc(var(--nav-h)+1rem)] overflow-hidden rounded-[2px] border bg-navy shadow-[0_30px_60px_-36px_rgba(0,0,0,0.7)] transition-[border-color] duration-700 ease-lux lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] ${
         highlighted ? 'border-champagne ring-2 ring-champagne/60 ring-offset-4 ring-offset-navy' : 'border-champagne/35'
       }`}
     >
@@ -227,7 +227,7 @@ export default function AlumniView({ onBack, onJump, highlighted }: Props) {
   return (
     <div>
       {/* Header */}
-      <header className="relative overflow-hidden bg-navy pb-12 pt-[calc(var(--nav-h)+2rem)] text-center text-ivory sm:pb-16">
+      <header className="relative overflow-hidden pb-12 pt-[calc(var(--nav-h)+2rem)] text-center text-ivory sm:pb-16">
         <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-0 h-[50vmax] w-[50vmax] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(0,119,200,0.25),transparent_60%)]" />
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
           <div className="flex justify-start">
@@ -273,16 +273,16 @@ export default function AlumniView({ onBack, onJump, highlighted }: Props) {
       </header>
 
       {/* Block A — Photography */}
-      <section aria-labelledby="photography-title" className="bg-ivory text-navy">
+      <section aria-labelledby="photography-title" className="relative text-ivory">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
           <Reveal className="mx-auto max-w-3xl text-center">
-            <Eyebrow className="text-azure">{a.photography.eyebrow}</Eyebrow>
+            <Eyebrow className="text-champagne/85">{a.photography.eyebrow}</Eyebrow>
             <h2 id="photography-title" className="mt-4 text-balance font-display text-[2rem] leading-[1.1] tracking-[0.02em] sm:text-5xl">
               {a.photography.title}
             </h2>
             <Ornament className="mt-6" />
-            <p className="mt-6 text-pretty text-[1.02rem] leading-relaxed text-navy/80">{a.photography.intro}</p>
-            <p className="mx-auto mt-5 max-w-xl border-y border-champagne/40 py-3 text-[0.85rem] italic leading-relaxed text-navy/60">{a.photography.curatorial}</p>
+            <p className="mt-6 text-pretty text-[1.02rem] leading-relaxed text-ivory/75">{a.photography.intro}</p>
+            <p className="mx-auto mt-5 max-w-xl border-y border-champagne/30 py-3 text-[0.85rem] italic leading-relaxed text-ivory/60">{a.photography.curatorial}</p>
           </Reveal>
 
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-7">
@@ -294,7 +294,7 @@ export default function AlumniView({ onBack, onJump, highlighted }: Props) {
       </section>
 
       {/* Block B — Music */}
-      <section aria-labelledby="music-title" className="relative overflow-hidden bg-navy text-ivory">
+      <section aria-labelledby="music-title" className="relative overflow-hidden text-ivory">
         <div aria-hidden="true" className="pointer-events-none absolute -left-[20%] bottom-0 h-[50vmax] w-[50vmax] rounded-full bg-[radial-gradient(circle,rgba(0,61,165,0.4),transparent_62%)]" />
         <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
           <Reveal className="mx-auto max-w-3xl text-center">

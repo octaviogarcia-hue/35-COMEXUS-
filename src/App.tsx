@@ -95,7 +95,18 @@ export default function App() {
 
   return (
     <>
-      <SubtleScrollFireworks enabled={route.tab === 'overview'} />
+      {/* Remounts per tab: Overview keeps the Hero-only behaviour; Alumni fires along the
+          whole showcase, a touch fainter, and stays quiet through a QR deep-link landing. */}
+      {route.tab === 'overview' ? (
+        <SubtleScrollFireworks key="overview" scope="hero" />
+      ) : (
+        <SubtleScrollFireworks
+          key="alumni"
+          scope="page"
+          armDelay={800}
+          className="fixed inset-0 z-0 pointer-events-none opacity-45"
+        />
+      )}
       <Navbar tab={route.tab} onNavigate={navigate} />
 
       <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo({ top: 0, behavior: 'instant' })}>
