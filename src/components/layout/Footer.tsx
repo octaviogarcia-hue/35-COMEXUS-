@@ -18,7 +18,7 @@ export default function Footer() {
         <div className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-x-10 gap-y-5">
           <LogoSlot src={ASSETS.logos.fulbrightComexus} alt="Fulbright-COMEXUS" className="h-9" badge fallback={<Comexus35Mark className="h-10" />} />
           <LogoSlot src={ASSETS.logos.fulbright80} alt="Fulbright Program 80th Anniversary" className="h-10 opacity-90" fallback={<Fulbright80Mark className="h-10" />} />
-          <LogoSlot src={ASSETS.logos.freedom250} alt="Freedom 250" className="h-10" fallback={<Freedom250Mark className="h-10" />} />
+          <LogoSlot src={ASSETS.logos.freedom250} alt="Freedom 250" className="h-12" badge badgePad="p-1.5" fallback={<Freedom250Mark className="h-10" />} />
         </div>
         <p className="mx-auto mt-8 max-w-md text-[0.85rem] leading-relaxed text-ivory/60">{f.org}</p>
         <p className="mx-auto mt-2 max-w-md text-[0.85rem] italic text-ivory/45">{f.tagline}</p>
