@@ -21,11 +21,13 @@ const asset = (path: string) => `${import.meta.env.BASE_URL}assets/${path}`;
 
 export const ASSETS = {
   logos: {
-    comexus35: asset('logos/comexus-35-anniversary.png'),
+    comexus35: asset('logos/comexus-35-anniversary.png'), // full-colour (white art on a blue panel)
+    comexus35White: asset('logos/comexus-35-anniversary-white.png'), // transparent, for Navy backgrounds
     fulbrightComexus: asset('logos/fulbright-comexus.png'),
     fulbright80: asset('logos/fulbright-80th-anniversary-white.png'),
     fulbright80Blue: asset('logos/fulbright-80th-anniversary-blue.png'),
-    freedom250: asset('logos/freedom-250-color.png'),
+    freedom250: asset('logos/freedom-250-color.png'), // navy + gold, for light backgrounds
+    freedom250White: asset('logos/freedom-250-white.png'), // white + gold, for Navy backgrounds
   },
   story: {
     y1948: asset('story/1948-fulbright-mexico.jpg'),
