@@ -13,12 +13,21 @@ interface SlotProps {
   alt: string;
   fallback: React.ReactNode;
   className?: string;
+  /**
+   * Sit the logo on a subtle Ivory plate with a hairline Champagne rule — for
+   * full-colour artwork that would lose contrast directly on Navy.
+   */
+  badge?: boolean;
 }
 
-export function LogoSlot({ src, alt, fallback, className = 'h-12' }: SlotProps) {
+export function LogoSlot({ src, alt, fallback, className = 'h-12', badge = false }: SlotProps) {
   const [failed, setFailed] = useState(false);
   if (failed) return <>{fallback}</>;
-  return <img src={src} alt={alt} className={`${className} w-auto object-contain`} onError={() => setFailed(true)} loading="lazy" />;
+  const img = <img src={src} alt={alt} className={`${className} w-auto object-contain`} onError={() => setFailed(true)} loading="lazy" />;
+  if (!badge) return img;
+  return (
+    <span className="inline-flex items-center rounded-md border border-champagne/70 bg-ivory px-3.5 py-2 shadow-[0_10px_24px_-16px_rgba(0,0,0,0.7)]">{img}</span>
+  );
 }
 
 /* ───────────────────────── Fallback marks (vector) ───────────────────────── */
