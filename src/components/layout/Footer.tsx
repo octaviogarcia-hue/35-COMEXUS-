@@ -15,9 +15,9 @@ export default function Footer() {
           Legacy of Exchange
         </p>
         <Ornament className="mt-6" />
-        <div className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-x-10 gap-y-5 opacity-80">
-          <LogoSlot src={ASSETS.logos.fulbrightComexus} alt="Fulbright-COMEXUS" className="h-10" fallback={<Comexus35Mark className="h-10" />} />
-          <LogoSlot src={ASSETS.logos.fulbright80} alt="Fulbright Program 80th Anniversary" className="h-10" fallback={<Fulbright80Mark className="h-10" />} />
+        <div className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-x-10 gap-y-5">
+          <LogoSlot src={ASSETS.logos.fulbrightComexus} alt="Fulbright-COMEXUS" className="h-9" badge fallback={<Comexus35Mark className="h-10" />} />
+          <LogoSlot src={ASSETS.logos.fulbright80} alt="Fulbright Program 80th Anniversary" className="h-10 opacity-90" fallback={<Fulbright80Mark className="h-10" />} />
           <LogoSlot src={ASSETS.logos.freedom250} alt="Freedom 250" className="h-10" fallback={<Freedom250Mark className="h-10" />} />
         </div>
         <p className="mx-auto mt-8 max-w-md text-[0.85rem] leading-relaxed text-ivory/60">{f.org}</p>
