@@ -18,15 +18,17 @@ interface SlotProps {
    * full-colour artwork that would lose contrast directly on Navy.
    */
   badge?: boolean;
+  /** Padding of the badge plate (square marks want less than wide lockups). */
+  badgePad?: string;
 }
 
-export function LogoSlot({ src, alt, fallback, className = 'h-12', badge = false }: SlotProps) {
+export function LogoSlot({ src, alt, fallback, className = 'h-12', badge = false, badgePad = 'px-3.5 py-2' }: SlotProps) {
   const [failed, setFailed] = useState(false);
   if (failed) return <>{fallback}</>;
   const img = <img src={src} alt={alt} className={`${className} w-auto object-contain`} onError={() => setFailed(true)} loading="lazy" />;
   if (!badge) return img;
   return (
-    <span className="inline-flex items-center rounded-md border border-champagne/70 bg-ivory px-3.5 py-2 shadow-[0_10px_24px_-16px_rgba(0,0,0,0.7)]">{img}</span>
+    <span className={`inline-flex items-center rounded-md border border-champagne/70 bg-ivory ${badgePad} shadow-[0_10px_24px_-16px_rgba(0,0,0,0.7)]`}>{img}</span>
   );
 }
 

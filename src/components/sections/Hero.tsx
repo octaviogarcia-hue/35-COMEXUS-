@@ -65,7 +65,8 @@ export default function Hero({ onMeetAlumni, onViewProgram, onScrollNext }: Prop
   const logos = [
     { src: ASSETS.logos.comexus35, alt: 'COMEXUS 35th Anniversary · Fulbright-COMEXUS', Fallback: Comexus35Mark },
     { src: ASSETS.logos.fulbright80, alt: 'Fulbright Program 80th Anniversary', Fallback: Fulbright80Mark },
-    { src: ASSETS.logos.freedom250, alt: 'Freedom 250', Fallback: Freedom250Mark },
+    // Navy-on-white artwork: shown on the Ivory badge so it keeps its contrast on the Navy Hero.
+    { src: ASSETS.logos.freedom250, alt: 'Freedom 250', Fallback: Freedom250Mark, badge: true },
   ];
 
   return (
@@ -176,11 +177,18 @@ export default function Hero({ onMeetAlumni, onViewProgram, onScrollNext }: Prop
             transition={{ duration: 1, delay: T.logosLabel, ease: EASE_LUX }}
             className="mx-auto mt-4 flex max-w-3xl flex-wrap items-center justify-center gap-x-8 gap-y-5 border-y border-champagne/15 py-5 sm:gap-x-12"
           >
-            {logos.map(({ src, alt, Fallback }, i) => (
+            {logos.map(({ src, alt, Fallback, badge }, i) => (
               <Fragment key={alt}>
                 {i > 0 && <span className="hidden h-8 w-px bg-champagne/25 sm:block" aria-hidden="true" />}
                 <motion.div {...rise(T.logos + 0.12 * i, 10)}>
-                  <LogoSlot src={src} alt={alt} className="h-11 sm:h-12" fallback={<Fallback className="h-11 sm:h-12" />} />
+                  <LogoSlot
+                    src={src}
+                    alt={alt}
+                    className={badge ? 'h-12 sm:h-14' : 'h-11 sm:h-12'}
+                    badge={badge}
+                    badgePad="p-1.5"
+                    fallback={<Fallback className="h-11 sm:h-12" />}
+                  />
                 </motion.div>
               </Fragment>
             ))}
