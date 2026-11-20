@@ -1,8 +1,8 @@
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { ImageIcon } from 'lucide-react';
 import { useRef } from 'react';
+import { CONTENT } from '../../data/galaData';
 import type { TimelineItem } from '../../data/galaData';
-import { useLanguage } from '../../i18n/LanguageContext';
 import ImageWithFallback from '../ui/ImageWithFallback';
 import Ornament, { Eyebrow } from '../ui/Ornament';
 import Reveal, { DrawLine, RevealGroup, RevealItem } from '../ui/Reveal';
@@ -27,6 +27,9 @@ function ArchivalFallback({ year, label }: { year: string; label: string }) {
   );
 }
 
+const FRAME = 'relative w-full overflow-hidden rounded-[2px] shadow-[0_24px_50px_-28px_rgba(0,43,73,0.6)]';
+const ARCHIVAL_TONE = 'grayscale-[35%] sepia-[15%]';
+
 /**
  * 4:3 archival frame whose image drifts a few percent against the scroll.
  * The inner layer is taller than the frame, so the edges never show.
@@ -37,16 +40,35 @@ function ParallaxPhoto({ item, photoPending }: { item: TimelineItem; photoPendin
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], reduce ? ['0%', '0%'] : ['-5%', '5%']);
   return (
-    <div ref={ref} className="relative aspect-[4/3] w-full overflow-hidden rounded-[2px] shadow-[0_24px_50px_-28px_rgba(0,43,73,0.6)]">
+    <div ref={ref} className={`${FRAME} aspect-[4/3]`}>
       <motion.div style={{ y }} className="absolute inset-x-0 -inset-y-[7%] will-change-transform">
         <ImageWithFallback
           src={item.image}
           alt={item.imageAlt}
           className="h-full w-full"
-          imgClassName="grayscale-[35%] sepia-[15%]"
+          imgClassName={ARCHIVAL_TONE}
           fallback={<ArchivalFallback year={item.id} label={photoPending} />}
         />
       </motion.div>
+    </div>
+  );
+}
+
+/**
+ * Upright 3:4 frame for portraits, anchored at the top and without the parallax
+ * drift, so heads are never cropped. Width is capped so small archival files
+ * stay sharp on high-density screens.
+ */
+function PortraitPhoto({ item, photoPending }: { item: TimelineItem; photoPending: string }) {
+  return (
+    <div className={`${FRAME} aspect-[3/4]`}>
+      <ImageWithFallback
+        src={item.image}
+        alt={item.imageAlt}
+        className="h-full w-full"
+        imgClassName={`object-top ${ARCHIVAL_TONE}`}
+        fallback={<ArchivalFallback year={item.id} label={photoPending} />}
+      />
     </div>
   );
 }
@@ -77,8 +99,8 @@ function Milestone({ item, index, photoPending }: { item: TimelineItem; index: n
         delay={0.1}
         className={`col-start-2 pb-14 md:row-start-1 md:pb-20 ${flip ? 'md:col-start-1 md:pr-10' : 'md:col-start-3 md:pl-10'}`}
       >
-        <figure className="relative">
-          <ParallaxPhoto item={item} photoPending={photoPending} />
+        <figure className={`relative ${item.portrait ? `max-w-[17rem] sm:max-w-[19rem] ${flip ? 'md:ml-auto' : ''}` : ''}`}>
+          {item.portrait ? <PortraitPhoto item={item} photoPending={photoPending} /> : <ParallaxPhoto item={item} photoPending={photoPending} />}
           <span aria-hidden="true" className="pointer-events-none absolute -inset-2 rounded-[2px] border border-champagne/50" />
         </figure>
       </Reveal>
@@ -86,8 +108,21 @@ function Milestone({ item, index, photoPending }: { item: TimelineItem; index: n
   );
 }
 
+/** Renders `text`, setting the first occurrence of `figure` in Champagne display type. */
+function WithFigure({ text, figure }: { text: string; figure: string }) {
+  const at = text.indexOf(figure);
+  if (at < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, at)}
+      <span className="whitespace-nowrap font-display text-[1.35em] leading-none tracking-[0.02em] text-champagne">{figure}</span>
+      {text.slice(at + figure.length)}
+    </>
+  );
+}
+
 export default function OurStory() {
-  const { t } = useLanguage();
+  const t = CONTENT;
   const s = t.story;
   const listRef = useRef<HTMLOListElement>(null);
   const reduce = useReducedMotion();
@@ -101,7 +136,11 @@ export default function OurStory() {
           <Eyebrow className="text-azure">{s.eyebrow}</Eyebrow>
           <h2 className="mt-4 text-balance font-display text-[2.3rem] leading-[1.05] tracking-[0.02em] text-navy sm:text-6xl">{s.title}</h2>
           <Ornament className="mt-6" />
-          <p className="mt-6 text-pretty text-[1.05rem] leading-relaxed text-navy/80 sm:text-lg">{s.intro}</p>
+          <div className="mt-6 space-y-4 text-pretty text-[1.02rem] leading-relaxed text-navy/80 sm:text-[1.1rem]">
+            {s.intro.map((p) => (
+              <p key={p.slice(0, 24)}>{p}</p>
+            ))}
+          </div>
         </Reveal>
 
         <div className="relative mt-16 sm:mt-24">
@@ -139,7 +178,7 @@ export default function OurStory() {
           <div className="relative mx-auto mt-6 max-w-2xl space-y-4 text-pretty text-[1rem] leading-relaxed text-ivory/80 sm:text-[1.07rem]">
             {s.closing.paragraphs.map((p) => (
               <RevealItem as="p" key={p.slice(0, 24)}>
-                {p}
+                <WithFigure text={p} figure={s.closing.figure} />
               </RevealItem>
             ))}
           </div>
@@ -148,12 +187,9 @@ export default function OurStory() {
           </RevealItem>
           <RevealItem
             as="p"
-            className="relative mx-auto mt-7 max-w-2xl text-balance font-display text-[1.6rem] leading-tight tracking-[0.03em] text-champagne sm:text-[2.2rem]"
+            className="relative mx-auto mt-7 max-w-2xl text-balance font-display text-[1.4rem] leading-snug tracking-[0.02em] text-champagne sm:text-[1.85rem]"
           >
             {s.closing.highlight}
-          </RevealItem>
-          <RevealItem as="p" y={14} className="relative mt-5 font-script text-[2.6rem] leading-none text-ivory sm:text-6xl">
-            {s.closing.signoff}
           </RevealItem>
         </RevealGroup>
       </div>

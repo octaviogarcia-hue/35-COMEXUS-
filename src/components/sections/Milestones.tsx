@@ -1,15 +1,15 @@
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { useRef } from 'react';
+import { CONTENT } from '../../data/galaData';
 import type { Milestone } from '../../data/galaData';
 import { EASE_LUX } from '../../lib/motion';
 import CountUp from '../ui/CountUp';
-import { useLanguage } from '../../i18n/LanguageContext';
-import { BbpEmblem, Comexus35Mark, Freedom250Mark, Fulbright80Mark, LogoSlot } from '../ui/Logos';
+import { Comexus35Mark, Freedom250Mark, Fulbright80Mark, LogoSlot } from '../ui/Logos';
 import Ornament, { Eyebrow } from '../ui/Ornament';
 import Reveal from '../ui/Reveal';
 
-function MilestoneLogo({ item, index, emblemLabel }: { item: Milestone; index: number; emblemLabel: string }) {
-  if (item.emblem === 'bbp') return <BbpEmblem className="h-24 w-24" label={emblemLabel} />;
+function MilestoneLogo({ item, index }: { item: Milestone; index: number }) {
+  if (!item.logo) return null;
   const fallbacks = [
     <Comexus35Mark key="c" tone="dark" className="h-12" />,
     <Fulbright80Mark key="f" tone="dark" className="h-12" />,
@@ -22,9 +22,8 @@ function MilestoneLogo({ item, index, emblemLabel }: { item: Milestone; index: n
 }
 
 export default function Milestones() {
-  const { t, lang } = useLanguage();
+  const t = CONTENT;
   const m = t.milestones;
-  const emblemLabel = lang === 'es' ? 'PROGRAMA BINACIONAL DE NEGOCIOS' : 'BINATIONAL BUSINESS PROGRAM';
   const reduce = useReducedMotion();
   const gridRef = useRef<HTMLUListElement>(null);
   // Counters start together, once, when the grid is meaningfully on screen.
@@ -54,8 +53,9 @@ export default function Milestones() {
                 <span aria-hidden="true" className="edge-glint" />
                 <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-legacy via-azure to-sky" />
 
-                <div className="relative flex h-24 items-center">
-                  <MilestoneLogo item={item} index={i} emblemLabel={emblemLabel} />
+                {/* Typography-only cards keep the logo row's height on multi-column layouts so the numbers line up */}
+                <div className={`relative h-24 items-center ${item.logo ? 'flex' : 'hidden sm:flex'}`}>
+                  <MilestoneLogo item={item} index={i} />
                 </div>
 
                 <div className="relative mt-6 flex items-end gap-3">

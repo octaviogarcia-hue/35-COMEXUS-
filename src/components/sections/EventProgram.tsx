@@ -1,9 +1,9 @@
 import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
 import { Award, GlassWater, Mic2, MoonStar, Music2 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { CONTENT } from '../../data/galaData';
 import type { ProgramEntry } from '../../data/galaData';
 import { EASE_LUX } from '../../lib/motion';
-import { useLanguage } from '../../i18n/LanguageContext';
 import Ornament, { Eyebrow } from '../ui/Ornament';
 import Reveal from '../ui/Reveal';
 
@@ -16,7 +16,7 @@ const ICONS: Record<ProgramEntry['icon'], typeof Mic2> = {
 };
 
 export default function EventProgram() {
-  const { t } = useLanguage();
+  const t = CONTENT;
   const p = t.program;
   const reduce = useReducedMotion();
   const listRef = useRef<HTMLOListElement>(null);

@@ -1,9 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, Camera, Check, Globe, Instagram, Link2, Linkedin, Music2, Quote, UserRound, Youtube } from 'lucide-react';
-import { useState } from 'react';
-import { ALUMNI_LINKS, type Musician, type Photographer, type ProfileId } from '../../data/galaData';
-import { shareableUrl } from '../../hooks/useHashRoute';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { ArrowLeft, ArrowUpRight, Camera, Globe, Music2, Quote, UserRound } from 'lucide-react';
+import { ALUMNI_LINKS, CONTENT, type Musician, type Photographer, type ProfileId } from '../../data/galaData';
 import { EASE_LUX } from '../../lib/motion';
 import ImageWithFallback from '../ui/ImageWithFallback';
 import Ornament, { Eyebrow } from '../ui/Ornament';
@@ -29,40 +26,12 @@ function PortraitFallback({ label, tone = 'ivory' }: { label: string; tone?: 'iv
   );
 }
 
-function CopyLinkButton({ id, tone = 'navy' }: { id: ProfileId; tone?: 'navy' | 'ivory' }) {
-  const { t } = useLanguage();
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    const url = shareableUrl('alumni', id);
-    try {
-      await navigator.clipboard.writeText(url);
-    } catch {
-      window.prompt(t.alumni.copyLink, url);
-    }
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1800);
-  };
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      aria-label={copied ? t.alumni.copied : t.alumni.copyLink}
-      title={copied ? t.alumni.copied : t.alumni.copyLink}
-      className={`grid h-9 w-9 place-items-center rounded-full border transition-colors ${
-        tone === 'navy' ? 'border-navy/20 text-navy/60 hover:border-champagne hover:text-navy' : 'border-champagne/40 text-champagne/80 hover:bg-champagne hover:text-navy'
-      }`}
-    >
-      {copied ? <Check className="h-4 w-4" strokeWidth={1.5} /> : <Link2 className="h-4 w-4" strokeWidth={1.5} />}
-    </button>
-  );
-}
-
 const isUsable = (href?: string) => !!href && href.trim() !== '';
 
 /* ─────────────────────────── photographer ─────────────────────────── */
 
 function PhotographerCard({ person, index, highlighted }: { person: Photographer; index: number; highlighted: boolean }) {
-  const { t } = useLanguage();
+  const t = CONTENT;
   const link = ALUMNI_LINKS[person.id].portfolio;
   return (
     <Reveal
@@ -84,9 +53,6 @@ function PhotographerCard({ person, index, highlighted }: { person: Photographer
         />
         <span className="absolute left-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-navy/85 font-display text-lg text-champagne backdrop-blur">
           {String(index + 1).padStart(2, '0')}
-        </span>
-        <span className="absolute right-4 top-4">
-          <CopyLinkButton id={person.id} tone="ivory" />
         </span>
       </div>
 
@@ -130,17 +96,9 @@ function PhotographerCard({ person, index, highlighted }: { person: Photographer
 /* ───────────────────────────── musician ───────────────────────────── */
 
 function MusicianFeature({ person, highlighted }: { person: Musician; highlighted: boolean }) {
-  const { t } = useLanguage();
+  const t = CONTENT;
   const m = t.alumni.music;
-  const links = ALUMNI_LINKS.musician;
-  const items = [
-    { key: 'website', href: links.website, icon: Globe },
-    { key: 'portfolio', href: links.portfolio, icon: ArrowUpRight },
-    { key: 'spotify', href: links.spotify, icon: Music2 },
-    { key: 'youtube', href: links.youtube, icon: Youtube },
-    { key: 'instagram', href: links.instagram, icon: Instagram },
-    { key: 'linkedin', href: links.linkedin, icon: Linkedin },
-  ].filter((l) => isUsable(l.href)) as { key: keyof typeof m.linkLabels; href: string; icon: typeof Globe }[];
+  const website = ALUMNI_LINKS.musician.website;
 
   return (
     <Reveal
@@ -160,9 +118,6 @@ function MusicianFeature({ person, highlighted }: { person: Musician; highlighte
           fallback={<PortraitFallback label={t.alumni.photoPending} tone="navy" />}
         />
         <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-navy/40" />
-        <span className="absolute right-4 top-4">
-          <CopyLinkButton id={person.id} tone="ivory" />
-        </span>
       </div>
 
       <RevealGroup stagger={0.1} delay={0.25} className="relative p-6 sm:p-10 lg:p-12">
@@ -187,24 +142,18 @@ function MusicianFeature({ person, highlighted }: { person: Musician; highlighte
           <p className="mt-3 text-[0.97rem] leading-relaxed text-ivory/75">{person.career}</p>
         </RevealItem>
 
-        {items.length > 0 && (
+        {isUsable(website) && (
           <RevealItem y={10} className="mt-8">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-champagne">{m.linksLabel}</p>
-            <ul className="mt-4 flex flex-wrap gap-2.5">
-              {items.map(({ key, href, icon: Icon }) => (
-                <li key={key}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-champagne/45 px-4 py-2 text-[0.8rem] font-medium tracking-[0.06em] text-ivory transition-colors duration-500 ease-lux hover:border-champagne hover:bg-champagne hover:text-navy"
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={1.4} aria-hidden="true" />
-                    {m.linkLabels[key]}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <a
+              href={website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex min-h-[48px] items-center gap-2.5 rounded-full border border-champagne/60 px-6 py-2.5 text-[0.8rem] font-semibold uppercase tracking-[0.16em] text-ivory transition-colors duration-500 ease-lux hover:border-champagne hover:bg-champagne hover:text-navy"
+            >
+              <Globe className="h-4 w-4" strokeWidth={1.4} aria-hidden="true" />
+              {m.websiteLabel}
+              <ArrowUpRight className="h-4 w-4 transition-transform duration-500 ease-lux group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.5} aria-hidden="true" />
+            </a>
           </RevealItem>
         )}
       </RevealGroup>
@@ -215,7 +164,7 @@ function MusicianFeature({ person, highlighted }: { person: Musician; highlighte
 /* ───────────────────────────── view ───────────────────────────── */
 
 export default function AlumniView({ onBack, onJump, highlighted }: Props) {
-  const { t } = useLanguage();
+  const t = CONTENT;
   const a = t.alumni;
   const reduce = useReducedMotion();
 
@@ -241,13 +190,16 @@ export default function AlumniView({ onBack, onJump, highlighted }: Props) {
             </button>
           </div>
           <motion.div initial={reduce ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: EASE_LUX }}>
-            <Eyebrow className="mt-6 text-champagne">{a.eyebrow}</Eyebrow>
-            <h1 className="mt-4 font-display text-[2.6rem] uppercase leading-none tracking-legacy text-ivory sm:text-6xl" style={{ paddingLeft: '0.14em' }}>
+            <h1 className="mx-auto mt-6 max-w-3xl text-balance font-display text-[2.35rem] leading-[1.08] tracking-[0.02em] text-ivory sm:text-6xl">
               {a.title}
             </h1>
-            <p className="mt-1 font-script text-[2.2rem] leading-tight text-champagne sm:text-5xl">Fulbright-García Robles</p>
+            <p className="mt-2 font-script text-[2.1rem] leading-tight text-champagne sm:text-5xl">Fulbright-García Robles</p>
             <Ornament className="mt-5" />
-            <p className="mx-auto mt-5 max-w-xl text-pretty text-[1rem] leading-relaxed text-ivory/75">{a.intro}</p>
+            <div className="mx-auto mt-5 max-w-2xl space-y-3 text-pretty text-[1rem] leading-relaxed text-ivory/75 sm:text-[1.05rem]">
+              {a.intro.map((p) => (
+                <p key={p.slice(0, 24)}>{p}</p>
+              ))}
+            </div>
           </motion.div>
 
           <nav aria-label={a.jumpTo} className="mt-8">
@@ -281,7 +233,11 @@ export default function AlumniView({ onBack, onJump, highlighted }: Props) {
               {a.photography.title}
             </h2>
             <Ornament className="mt-6" />
-            <p className="mt-6 text-pretty text-[1.02rem] leading-relaxed text-ivory/75">{a.photography.intro}</p>
+            <div className="mt-6 space-y-3 text-pretty text-[1.02rem] leading-relaxed text-ivory/75">
+              {a.photography.intro.map((p) => (
+                <p key={p.slice(0, 24)}>{p}</p>
+              ))}
+            </div>
             <p className="mx-auto mt-5 max-w-xl border-y border-champagne/30 py-3 text-[0.85rem] italic leading-relaxed text-ivory/60">{a.photography.curatorial}</p>
           </Reveal>
 
@@ -303,7 +259,11 @@ export default function AlumniView({ onBack, onJump, highlighted }: Props) {
               {a.music.title}
             </h2>
             <Ornament className="mt-6" />
-            <p className="mx-auto mt-6 max-w-xl text-pretty text-[1.02rem] leading-relaxed text-ivory/75">{a.music.intro}</p>
+            <div className="mx-auto mt-6 max-w-2xl space-y-3 text-pretty text-[1.02rem] leading-relaxed text-ivory/75">
+              {a.music.intro.map((p) => (
+                <p key={p.slice(0, 24)}>{p}</p>
+              ))}
+            </div>
           </Reveal>
           <div className="mt-12">
             <MusicianFeature person={a.music.person} highlighted={highlighted === 'musician'} />
