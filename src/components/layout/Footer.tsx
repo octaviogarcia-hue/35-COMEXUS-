@@ -1,4 +1,4 @@
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, Instagram } from 'lucide-react';
 import { ASSETS, CONTENT } from '../../data/galaData';
 import { Comexus35Mark, LogoSlot } from '../ui/Logos';
 import Ornament from '../ui/Ornament';
@@ -29,6 +29,19 @@ export default function Footer() {
         </button>
         <p className="mt-6 text-[0.7rem] tracking-[0.12em] text-ivory/35">
           © {new Date().getFullYear()} {f.rights}
+        </p>
+        <p className="mx-auto mt-6 max-w-md border-t border-[#C9A66B]/15 pt-4 text-xs tracking-wider text-[#F3EBDD]/65">
+          {f.credit.label}{' '}
+          <a
+            href={f.credit.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[#C9A66B]/90 underline decoration-[#C9A66B]/40 underline-offset-4 transition-colors duration-500 ease-lux hover:text-[#C9A66B] hover:decoration-[#C9A66B]"
+          >
+            {f.credit.name}
+            <Instagram size={12} strokeWidth={1.6} aria-hidden="true" />
+            <span className="sr-only">(Instagram, opens in a new tab)</span>
+          </a>
         </p>
       </div>
     </footer>
