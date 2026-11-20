@@ -64,4 +64,6 @@ Logos: transparent PNG or SVG (if SVG, change the extension in `galaData.ts`).
 - **GitHub Pages:** Settings → Pages → Source: *GitHub Actions*. `.github/workflows/deploy.yml` builds and publishes on every push to `main`.
 - **Vercel:** import the repo; framework *Vite*, build `npm run build`, output `dist`.
 
+- **Own server (Apache, Nginx, IIS…):** run `npm run build` and copy the *contents* of `dist/` (`index.html`, `static/`, `assets/`, `favicon.svg`) to the site root or to any sub-folder, e.g. `comexus.org.mx/gala/`. No rewrite rules are needed: navigation is hash-based (`#/alumni/...`), so the server only ever serves `index.html`. Link to the folder with a trailing slash (`/gala/`); most servers add it automatically.
+
 `vite.config.ts` uses `base: './'`, so the same build works at a domain root or a `/repo-name/` sub-path.
