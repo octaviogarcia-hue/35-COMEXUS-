@@ -384,6 +384,7 @@ export const CONTENT = {
     tagline: '35 years of connecting people, institutions, and opportunities across borders.',
     backToTop: 'Back to top',
     rights: 'COMEXUS · Fulbright-García Robles',
+    credit: { label: 'Developed by', name: 'eiteen_gc', href: 'https://www.instagram.com/eiteen_gc/' },
   },
 };
 
