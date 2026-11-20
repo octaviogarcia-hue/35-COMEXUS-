@@ -1,11 +1,10 @@
 import { ArrowUp } from 'lucide-react';
-import { ASSETS } from '../../data/galaData';
-import { useLanguage } from '../../i18n/LanguageContext';
-import { Comexus35Mark, Freedom250Mark, Fulbright80Mark, LogoSlot } from '../ui/Logos';
+import { ASSETS, CONTENT } from '../../data/galaData';
+import { Comexus35Mark, LogoSlot } from '../ui/Logos';
 import Ornament from '../ui/Ornament';
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const t = CONTENT;
   const f = t.footer;
   return (
     <footer className="relative z-10 border-t border-champagne/20 bg-navy text-ivory" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
@@ -15,12 +14,10 @@ export default function Footer() {
           Legacy of Exchange
         </p>
         <Ornament className="mt-6" />
-        <div className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-x-10 gap-y-5">
-          <LogoSlot src={ASSETS.logos.fulbrightComexus} alt="Fulbright-COMEXUS" className="h-9" badge fallback={<Comexus35Mark className="h-10" />} />
-          <LogoSlot src={ASSETS.logos.fulbright80} alt="Fulbright Program 80th Anniversary" className="h-10 opacity-90" fallback={<Fulbright80Mark className="h-10" />} />
-          <LogoSlot src={ASSETS.logos.freedom250White} alt="Freedom 250" className="h-14" fallback={<Freedom250Mark className="h-10" />} />
+        <div className="mt-8 flex justify-center">
+          <LogoSlot src={ASSETS.logos.comexus35White} alt="COMEXUS 35th Anniversary · Fulbright-COMEXUS" className="h-16 sm:h-[4.5rem]" fallback={<Comexus35Mark tone="light" className="h-14" />} />
         </div>
-        <p className="mx-auto mt-8 max-w-md text-[0.85rem] leading-relaxed text-ivory/60">{f.org}</p>
+        <p className="mx-auto mt-6 max-w-md text-[0.9rem] leading-relaxed text-ivory/70">{f.org}</p>
         <p className="mx-auto mt-2 max-w-md text-[0.85rem] italic text-ivory/45">{f.tagline}</p>
         <button
           type="button"

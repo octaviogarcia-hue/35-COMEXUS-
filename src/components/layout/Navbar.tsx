@@ -1,36 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import type { Lang, TabId } from '../../data/galaData';
-import { LANGS } from '../../data/galaData';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { CONTENT } from '../../data/galaData';
+import type { TabId } from '../../data/galaData';
 
 interface Props {
   tab: TabId;
   onNavigate: (tab: TabId, anchor?: string | null) => void;
-}
-
-function LangSwitch() {
-  const { lang, setLang, t } = useLanguage();
-  return (
-    <div role="group" aria-label={t.nav.langLabel} className="flex items-center rounded-full border border-champagne/40 bg-navy/40 p-0.5 text-[0.7rem] font-semibold tracking-[0.18em]">
-      {LANGS.map((l: Lang, i) => (
-        <span key={l} className="flex items-center">
-          {i > 0 && <span className="mx-0.5 h-3 w-px bg-champagne/40" aria-hidden="true" />}
-          <button
-            type="button"
-            onClick={() => setLang(l)}
-            aria-pressed={lang === l}
-            lang={l}
-            className={`min-h-[32px] min-w-[38px] rounded-full px-2.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champagne ${
-              lang === l ? 'bg-champagne text-navy' : 'text-ivory/75 hover:text-champagne'
-            }`}
-          >
-            {l.toUpperCase()}
-          </button>
-        </span>
-      ))}
-    </div>
-  );
 }
 
 function Brand({ onClick }: { onClick: () => void }) {
@@ -53,7 +28,7 @@ interface TabBarProps extends Props {
 }
 
 function TabBar({ tab, onNavigate, className = '', pillId }: TabBarProps) {
-  const { t } = useLanguage();
+  const t = CONTENT;
   const tabs: { id: TabId; label: string }[] = [
     { id: 'overview', label: t.nav.overview },
     { id: 'alumni', label: t.nav.alumni },
@@ -93,7 +68,7 @@ function TabBar({ tab, onNavigate, className = '', pillId }: TabBarProps) {
 }
 
 export default function Navbar({ tab, onNavigate }: Props) {
-  const { t } = useLanguage();
+  const t = CONTENT;
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -115,10 +90,11 @@ export default function Navbar({ tab, onNavigate }: Props) {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded focus:bg-champagne focus:px-3 focus:py-2 focus:text-navy">
         {t.nav.skip}
       </a>
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6">
+      {/* Brand left, tabs centred (the empty third column balances the brand on desktop) */}
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr]">
         <Brand onClick={() => onNavigate('overview', 'top')} />
         <TabBar tab={tab} onNavigate={onNavigate} pillId="tab-pill-desktop" className="hidden w-[min(26rem,44vw)] md:block" />
-        <LangSwitch />
+        <span aria-hidden="true" className="hidden md:block" />
       </div>
       <div className="px-4 pb-2.5 md:hidden">
         <TabBar tab={tab} onNavigate={onNavigate} pillId="tab-pill-mobile" />

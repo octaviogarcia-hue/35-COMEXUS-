@@ -1,18 +1,14 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- *  galaData.ts — single source of truth for the microsite.
+ *  galaData.ts — single source of truth for the microsite (English only).
  *
- *  • Every visible string lives here in `en` (default) and `es`.
+ *  • Every visible string lives in `CONTENT`.
  *  • Every image path lives in `ASSETS`. Upload files to /public/assets/ with
- *    the exact names below and they replace the vector fallbacks automatically.
- *  • To fill in alumni profiles, edit `ALUMNI_LINKS` (URLs, shared by both
- *    languages) and the `alumni` block of each language.
+ *    the exact names below and they replace the elegant fallbacks automatically.
+ *  • To fill in alumni profiles, edit `ALUMNI_LINKS` (URLs) and the `alumni`
+ *    block of `CONTENT`.
  * ─────────────────────────────────────────────────────────────────────────────
  */
-
-export type Lang = 'en' | 'es';
-export const LANGS: Lang[] = ['en', 'es'];
-export const DEFAULT_LANG: Lang = 'en';
 
 /** Builds a path that works under any base (GitHub Pages sub-folder, Vercel root…). */
 const asset = (path: string) => `${import.meta.env.BASE_URL}assets/${path}`;
@@ -21,8 +17,8 @@ const asset = (path: string) => `${import.meta.env.BASE_URL}assets/${path}`;
 
 export const ASSETS = {
   logos: {
-    comexus35: asset('logos/comexus-35-anniversary.png'), // full-colour (white art on a blue panel)
-    comexus35White: asset('logos/comexus-35-anniversary-white.png'), // transparent, for Navy backgrounds
+    comexus35White: asset('logos/comexus-35-anniversary-white.png'), // transparent, for Navy backgrounds (Hero, footer)
+    comexus35Color: asset('logos/comexus-35-anniversary-color.png'), // full colour, for the Ivory milestone card
     fulbrightComexus: asset('logos/fulbright-comexus.png'),
     fulbright80: asset('logos/fulbright-80th-anniversary-white.png'),
     fulbright80Blue: asset('logos/fulbright-80th-anniversary-blue.png'),
@@ -32,35 +28,51 @@ export const ASSETS = {
   story: {
     y1948: asset('story/1948-fulbright-mexico.jpg'),
     y1980s: asset('story/1980s-growth.jpg'),
-    y1990: asset('story/1990-comexus-established.jpg'),
-    y1991: asset('story/1991-first-board-meeting.jpg'),
+    y1990: asset('story/1990-comexus-established.png'),
+    y1991: asset('story/1991-first-board-meeting.png'),
     y1992: asset('story/1992-garcia-robles.jpg'),
   },
   alumni: {
     photographer1: asset('alumni/photographer-1.jpg'),
     photographer2: asset('alumni/photographer-2.jpg'),
     photographer3: asset('alumni/photographer-3.jpg'),
+    photographer4: asset('alumni/photographer-4.jpg'),
+    photographer5: asset('alumni/photographer-5.jpg'),
+    photographer6: asset('alumni/photographer-6.jpg'),
     musician: asset('alumni/musician.jpg'),
   },
 } as const;
 
-/* ─────────────────────── Routing / QR anchor IDs ─────────────────────── */
+/* ─────────────────────── Routing / deep-link anchor IDs ─────────────────────── */
 
 export type TabId = 'overview' | 'alumni';
-export const PROFILE_IDS = ['photographer-1', 'photographer-2', 'photographer-3', 'musician'] as const;
+export const PROFILE_IDS = [
+  'photographer-1',
+  'photographer-2',
+  'photographer-3',
+  'photographer-4',
+  'photographer-5',
+  'photographer-6',
+  'musician',
+] as const;
 export type ProfileId = (typeof PROFILE_IDS)[number];
-export const OVERVIEW_SECTION_IDS = ['top', 'story', 'program', 'milestones'] as const;
+export const OVERVIEW_SECTION_IDS = ['top', 'story', 'future', 'support', 'program', 'milestones'] as const;
 export type OverviewSectionId = (typeof OVERVIEW_SECTION_IDS)[number];
 
-/* ─────────────────────── External links (alumni) ─────────────────────── */
+/* ─────────────────────── External links ─────────────────────── */
 // Replace "#" with the real URLs. Empty strings hide the link.
 
-export const ALUMNI_LINKS: Record<ProfileId, { portfolio: string; website?: string; instagram?: string; linkedin?: string; spotify?: string; youtube?: string }> = {
+export const ALUMNI_LINKS: Record<ProfileId, { portfolio: string; website?: string }> = {
   'photographer-1': { portfolio: '#' },
   'photographer-2': { portfolio: '#' },
   'photographer-3': { portfolio: '#' },
-  musician: { portfolio: '', website: '#', instagram: '#', spotify: '#', youtube: '#' },
+  'photographer-4': { portfolio: '#' },
+  'photographer-5': { portfolio: '#' },
+  'photographer-6': { portfolio: '#' },
+  musician: { portfolio: '', website: '#' },
 };
+
+export const DONATE_URL = 'https://www.comexus.org.mx/donativos.php';
 
 /* ───────────────────────────── Content types ─────────────────────────── */
 
@@ -71,6 +83,8 @@ export interface TimelineItem {
   text: string;
   image: string;
   imageAlt: string;
+  /** Portrait photos get an upright 3:4 frame anchored at the top, so faces are never cropped. */
+  portrait?: boolean;
 }
 
 export interface ProgramEntry {
@@ -87,9 +101,9 @@ export interface Milestone {
   unit: string;
   title: string;
   caption: string;
+  /** Omit for a typography-only card. */
   logo?: string;
   logoAlt?: string;
-  emblem?: 'bbp'; // typographic emblem when no logo exists
 }
 
 export interface Photographer {
@@ -112,96 +126,23 @@ export interface Musician {
   image: string;
 }
 
-export interface GalaContent {
-  meta: { title: string };
-  nav: {
-    overview: string;
-    alumni: string;
-    story: string;
-    program: string;
-    milestones: string;
-    langLabel: string;
-    skip: string;
-  };
-  hero: {
-    eyebrow: string;
-    lockup: { line1: string; line2: string; line3: string };
-    tagline: string;
-    facts: { label: string; value: string; detail?: string; icon: 'calendar' | 'clock' | 'pin' }[];
-    logosLabel: string;
-    ctaAlumni: string;
-    ctaAlumniHint: string;
-    ctaProgram: string;
-    scrollHint: string;
-  };
-  story: {
-    eyebrow: string;
-    title: string;
-    intro: string;
-    timeline: TimelineItem[];
-    photoPending: string;
-    closing: { eyebrow: string; paragraphs: string[]; highlight: string; signoff: string };
-  };
-  program: {
-    eyebrow: string;
-    title: string;
-    intro: string;
-    entries: ProgramEntry[];
-    toBeConfirmed: string;
-    note: string;
-  };
-  milestones: {
-    eyebrow: string;
-    title: string;
-    intro: string;
-    items: Milestone[];
-  };
-  alumni: {
-    back: string;
-    eyebrow: string;
-    title: string;
-    intro: string;
-    jumpTo: string;
-    copyLink: string;
-    copied: string;
-    photoPending: string;
-    photography: {
-      eyebrow: string;
-      title: string;
-      intro: string;
-      curatorial: string;
-      cta: string;
-      people: Photographer[];
-    };
-    music: {
-      eyebrow: string;
-      title: string;
-      intro: string;
-      careerLabel: string;
-      linksLabel: string;
-      linkLabels: { website: string; portfolio: string; instagram: string; spotify: string; youtube: string; linkedin: string };
-      person: Musician;
-    };
-  };
-  footer: {
-    org: string;
-    tagline: string;
-    backToTop: string;
-    rights: string;
-  };
-}
+/* ═════════════════════════════════ CONTENT ═════════════════════════════════ */
 
-/* ═════════════════════════════════ ENGLISH ═════════════════════════════════ */
+const photographer = (n: 1 | 2 | 3 | 4 | 5 | 6, image: string): Photographer => ({
+  id: `photographer-${n}`,
+  name: `[Photographer Name ${n}]`,
+  program: 'Fulbright-García Robles [Program name]',
+  cohort: '[Year / Generation]',
+  bio: '[Short biography: two or three sentences about the artist’s background, discipline and how their Fulbright experience shaped their work.]',
+  quote: '[A personal quote or testimonial from the photographer about exchange, perspective or the stories behind their images.]',
+  image,
+});
 
-const en: GalaContent = {
+export const CONTENT = {
   meta: { title: 'Celebrating a Legacy of Exchange · COMEXUS' },
   nav: {
     overview: 'Gala Overview',
     alumni: 'Alumni Showcase',
-    story: 'Our Story',
-    program: 'Program',
-    milestones: 'Milestones',
-    langLabel: 'Language',
     skip: 'Skip to content',
   },
   hero: {
@@ -217,18 +158,19 @@ const en: GalaContent = {
         value: 'Museo de Historia Natural y Cultura Ambiental',
         detail: 'Bosque de Chapultepec, Mexico City',
       },
-    ],
+    ] as { label: string; value: string; detail?: string; icon: 'calendar' | 'clock' | 'pin' }[],
     logosLabel: 'Celebrating together',
-    ctaAlumni: 'Meet the Alumni',
-    ctaAlumniHint: 'QR Showcase',
     ctaProgram: 'View the program',
     scrollHint: 'Scroll',
   },
   story: {
     eyebrow: 'Our Story',
     title: 'An Enduring Legacy of Exchange',
-    intro:
-      'For generations, educational and cultural exchange has created opportunities for people to learn from one another, build lasting connections, and contribute to a stronger relationship between Mexico and the United States.',
+    intro: [
+      "For 80 years, the Fulbright Program has brought people together through international educational and cultural exchange. As the U.S. government's flagship international educational exchange program, Fulbright creates opportunities for individuals to learn from one another, share ideas, and build connections that transcend borders.",
+      'In Mexico, this mission has grown through the work of COMEXUS. For 35 years, the Commission has fostered academic, professional, and cultural exchange between Mexico and the United States through the Fulbright-García Robles Program.',
+      'What began as an opportunity for individuals to study, teach, and conduct research across borders has grown into a lasting binational community, one that continues to contribute to both countries and strengthen their relationship.',
+    ],
     photoPending: 'Archival photograph',
     timeline: [
       {
@@ -237,7 +179,8 @@ const en: GalaContent = {
         title: 'The Fulbright Program comes to Mexico',
         text: 'The Fulbright Program began operating in Mexico, only two years after its establishment in the United States, opening new opportunities for educational exchange between the two countries.',
         image: ASSETS.story.y1948,
-        imageAlt: 'Archival photograph of the early Fulbright Program in Mexico, 1948',
+        imageAlt: 'Archival portrait from the early years of the Fulbright Program',
+        portrait: true,
       },
       {
         id: '1980s',
@@ -270,17 +213,56 @@ const en: GalaContent = {
         text: 'In keeping with the binational spirit of the Commission, its Board approved the designation of all grants as Fulbright-García Robles, honoring Mexican Ambassador Emeritus and Nobel Peace Prize Laureate Alfonso García Robles.',
         image: ASSETS.story.y1992,
         imageAlt: 'Portrait of Ambassador Alfonso García Robles',
+        portrait: true,
       },
-    ],
+    ] as TimelineItem[],
     closing: {
       eyebrow: 'A Legacy in Motion',
       paragraphs: [
-        'Over the years, COMEXUS has developed and supported a wide range of programs for students, scholars, researchers, teachers, and professionals. Some programs have evolved, others have concluded, and new opportunities have emerged.',
-        'Each has contributed to building the binational academic and cultural relationships that define COMEXUS today.',
+        'Since the establishment of COMEXUS in 1990, a total of 5,792 grantees have participated in the Fulbright-García Robles Program, building connections between Mexico and the United States through academic, professional, and cultural exchange.',
+        'Each grantee represents more than an international experience. Together, they form a binational community that carries forward the values of mutual understanding, collaboration, and shared learning across institutions, disciplines, generations, and borders.',
       ],
-      highlight: '35 years of connecting people, institutions, and opportunities across borders.',
-      signoff: 'And the story continues.',
+      /** Shown as the closing line of the box. */
+      highlight: 'The legacy of exchange is not only measured in years, but in the people who continue to move it forward.',
+      /** Figure picked out in Champagne inside the first paragraph. */
+      figure: '5,792',
     },
+  },
+  future: {
+    eyebrow: 'Looking Ahead',
+    title: 'The Next 35 Years',
+    intro: [
+      'As we look toward the next 35 years, we envision a future where educational and cultural exchange continues to evolve, reaching new communities and creating opportunities for more people to connect, learn, and collaborate across borders.',
+      'Building on the legacy of the Fulbright-García Robles Program, COMEXUS is exploring new ways to expand access to international exchange, strengthen partnerships, and engage its binational community.',
+    ],
+    pillars: [
+      {
+        icon: 'compass',
+        title: 'Expanding Opportunities',
+        text: 'Exploring new program formats, including short-term academic experiences and micro-certifications, to make international learning opportunities more accessible and responsive to emerging needs.',
+      },
+      {
+        icon: 'handshake',
+        title: 'Building Partnerships',
+        text: 'Strengthening collaboration with institutional partners, private-sector organizations, and state governments to develop new opportunities and diversify the support available for educational exchange.',
+      },
+      {
+        icon: 'users',
+        title: 'Engaging Our Community',
+        text: 'Recognizing alumni as one of the program’s greatest strengths. Their experiences, knowledge, and continued connection to Fulbright can help inspire future generations and contribute to the program’s evolving mission.',
+      },
+    ] as { icon: 'compass' | 'handshake' | 'users'; title: string; text: string }[],
+    closing: 'The next chapter is ours to build…together.',
+  },
+  support: {
+    title: 'Investing in the Future',
+    subtitle: 'Help Shape the Next 35 Years',
+    paragraphs: [
+      'Every contribution helps create new opportunities for educational and cultural exchange between Mexico and the United States.',
+      'Join us in investing in the next generation of exchange.',
+    ],
+    cta: 'Support COMEXUS',
+    href: DONATE_URL,
   },
   program: {
     eyebrow: 'December 2, 2026',
@@ -309,7 +291,7 @@ const en: GalaContent = {
       },
       { time: '8:00 PM', title: 'Cocktail Reception', icon: 'glass' },
       { time: '10:00 PM', title: 'End of Event', icon: 'moon' },
-    ],
+    ] as ProgramEntry[],
     note: 'Note: Names and titles of select institutional representatives are subject to confirmation.',
   },
   milestones: {
@@ -321,8 +303,8 @@ const en: GalaContent = {
         number: '35',
         unit: 'Years',
         title: 'of COMEXUS',
-        caption: 'The Mexico-U.S. Commission for Educational and Cultural Exchange.',
-        logo: ASSETS.logos.comexus35,
+        caption: 'A binational commission advancing educational and cultural exchange between Mexico and the United States.',
+        logo: ASSETS.logos.comexus35Color,
         logoAlt: 'COMEXUS 35th Anniversary logo',
       },
       {
@@ -337,8 +319,7 @@ const en: GalaContent = {
         number: '30',
         unit: 'Years',
         title: 'of the Binational Business Program',
-        caption: 'Three decades of professional exchange between Mexico and the United States.',
-        emblem: 'bbp',
+        caption: 'Building connections and fostering a deeper understanding between Mexico’s and the United States’ private sectors.',
       },
       {
         number: '250',
@@ -348,69 +329,44 @@ const en: GalaContent = {
         logo: ASSETS.logos.freedom250,
         logoAlt: 'Freedom 250 logo',
       },
-    ],
+    ] as Milestone[],
   },
   alumni: {
     back: 'Gala Overview',
-    eyebrow: 'Meet the Alumni',
-    title: 'Alumni Showcase',
-    intro: 'Fulbright-García Robles alumni whose art and music accompany tonight’s celebration.',
+    title: 'Exchange That Lasts Beyond the Experience',
+    intro: [
+      'The impact of Fulbright extends far beyond the time spent abroad. Its alumni carry forward the knowledge, perspectives, and connections gained through their experiences, contributing to their communities and professional fields while strengthening the ties between Mexico and the United States.',
+      'Across generations and disciplines, they are part of a binational community that continues to shape the legacy of exchange.',
+    ],
     jumpTo: 'Jump to',
-    copyLink: 'Copy link to this profile',
-    copied: 'Link copied',
     photoPending: 'Portrait coming soon',
     photography: {
       eyebrow: 'Photography Showcase',
       title: 'Through Their Lens: A Fulbright Alumni Photography Showcase',
-      intro:
-        'Discover the work of Fulbright-García Robles alumni through a photography showcase celebrating their perspectives, creativity, and the stories they tell through their lens.',
-      curatorial:
-        "Featured works are projected on screen during the gala evening. Explore the artists' profiles and digital portfolios below.",
+      intro: [
+        'Exchange takes many forms. Through art, photography, and music, Fulbright-García Robles alumni bring cultures, perspectives, and stories together, creating new ways to connect and understand one another.',
+        'Discover their work through a photography showcase celebrating the perspectives, creativity, and stories captured through their lens.',
+      ],
+      curatorial: "Featured works are projected on screen during the gala evening. Explore the artists' profiles and digital portfolios below.",
       cta: 'Explore Their Work',
       people: [
-        {
-          id: 'photographer-1',
-          name: '[Photographer Name 1]',
-          program: 'Fulbright-García Robles [Program name]',
-          cohort: '[Year / Generation]',
-          bio: '[Short biography: two or three sentences about the artist’s background, discipline and how their Fulbright experience shaped their work.]',
-          quote: '[A personal quote or testimonial from the photographer about exchange, perspective or the stories behind their images.]',
-          image: ASSETS.alumni.photographer1,
-        },
-        {
-          id: 'photographer-2',
-          name: '[Photographer Name 2]',
-          program: 'Fulbright-García Robles [Program name]',
-          cohort: '[Year / Generation]',
-          bio: '[Short biography: two or three sentences about the artist’s background, discipline and how their Fulbright experience shaped their work.]',
-          quote: '[A personal quote or testimonial from the photographer about exchange, perspective or the stories behind their images.]',
-          image: ASSETS.alumni.photographer2,
-        },
-        {
-          id: 'photographer-3',
-          name: '[Photographer Name 3]',
-          program: 'Fulbright-García Robles [Program name]',
-          cohort: '[Year / Generation]',
-          bio: '[Short biography: two or three sentences about the artist’s background, discipline and how their Fulbright experience shaped their work.]',
-          quote: '[A personal quote or testimonial from the photographer about exchange, perspective or the stories behind their images.]',
-          image: ASSETS.alumni.photographer3,
-        },
+        photographer(1, ASSETS.alumni.photographer1),
+        photographer(2, ASSETS.alumni.photographer2),
+        photographer(3, ASSETS.alumni.photographer3),
+        photographer(4, ASSETS.alumni.photographer4),
+        photographer(5, ASSETS.alumni.photographer5),
+        photographer(6, ASSETS.alumni.photographer6),
       ],
     },
     music: {
       eyebrow: 'Musical Performance',
       title: 'Meet the Musician',
-      intro: 'Meet the Fulbright-García Robles alumnus whose musical performance will accompany our celebration.',
+      intro: [
+        'Music is another language of cultural exchange. Through their talent and artistic expression, our Fulbright-García Robles alumni bring people and cultures together.',
+        'Discover the musician joining us for this special celebration and experience the power of music to connect across borders.',
+      ],
       careerLabel: 'Musical & professional journey',
-      linksLabel: 'Listen & connect',
-      linkLabels: {
-        website: 'Website',
-        portfolio: 'Portfolio',
-        instagram: 'Instagram',
-        spotify: 'Spotify',
-        youtube: 'YouTube',
-        linkedin: 'LinkedIn',
-      },
+      websiteLabel: 'Website',
       person: {
         id: 'musician',
         name: '[Musician Name]',
@@ -420,256 +376,15 @@ const en: GalaContent = {
         career:
           '[Description of their musical and professional trajectory: ensembles, recordings, notable stages, teaching, research or collaborations that connect Mexico and the United States.]',
         image: ASSETS.alumni.musician,
-      },
+      } as Musician,
     },
   },
   footer: {
-    org: 'Mexico-U.S. Commission for Educational and Cultural Exchange',
+    org: 'U.S.-Mexico Commission for Educational and Cultural Exchange',
     tagline: '35 years of connecting people, institutions, and opportunities across borders.',
     backToTop: 'Back to top',
     rights: 'COMEXUS · Fulbright-García Robles',
   },
 };
 
-/* ═════════════════════════════════ ESPAÑOL ═════════════════════════════════ */
-
-const es: GalaContent = {
-  meta: { title: 'Celebrando un legado de intercambio · COMEXUS' },
-  nav: {
-    overview: 'La Gala',
-    alumni: 'Exbecarios',
-    story: 'Nuestra historia',
-    program: 'Programa',
-    milestones: 'Aniversarios',
-    langLabel: 'Idioma',
-    skip: 'Ir al contenido',
-  },
-  hero: {
-    eyebrow: 'COMEXUS · Fulbright-García Robles',
-    // The official lockup stays in English, as on the printed invitation.
-    lockup: { line1: 'Celebrating a', line2: 'Legacy of', line3: 'Exchange' },
-    tagline: 'Honramos a las personas, las alianzas y las oportunidades que unen a nuestras naciones.',
-    facts: [
-      { icon: 'calendar', label: 'Fecha', value: '2 de diciembre de 2026' },
-      { icon: 'clock', label: 'Horario', value: '7:00 p. m. – 10:00 p. m.' },
-      {
-        icon: 'pin',
-        label: 'Sede',
-        value: 'Museo de Historia Natural y Cultura Ambiental',
-        detail: 'Bosque de Chapultepec, Ciudad de México',
-      },
-    ],
-    logosLabel: 'Celebramos juntos',
-    ctaAlumni: 'Conoce a los exbecarios',
-    ctaAlumniHint: 'Muestra QR',
-    ctaProgram: 'Ver el programa',
-    scrollHint: 'Desliza',
-  },
-  story: {
-    eyebrow: 'Nuestra historia',
-    title: 'Un legado perdurable de intercambio',
-    intro:
-      'Durante generaciones, el intercambio educativo y cultural ha creado oportunidades para que las personas aprendan unas de otras, construyan vínculos duraderos y contribuyan a una relación más sólida entre México y Estados Unidos.',
-    photoPending: 'Fotografía de archivo',
-    timeline: [
-      {
-        id: '1948',
-        year: '1948',
-        title: 'El Programa Fulbright llega a México',
-        text: 'El Programa Fulbright comenzó a operar en México apenas dos años después de su creación en Estados Unidos, abriendo nuevas oportunidades de intercambio educativo entre ambos países.',
-        image: ASSETS.story.y1948,
-        imageAlt: 'Fotografía de archivo de los inicios del Programa Fulbright en México, 1948',
-      },
-      {
-        id: '1980s',
-        year: 'Década de 1980',
-        title: 'Una década de crecimiento',
-        text: 'El número de becas para participantes mexicanos y estadounidenses creció de manera constante, de aproximadamente 50 en 1980 a 180 en 1990. Durante este periodo cobró fuerza la idea de establecer una comisión binacional.',
-        image: ASSETS.story.y1980s,
-        imageAlt: 'Becarios Fulbright durante la década de 1980',
-      },
-      {
-        id: '1990',
-        year: '27 de noviembre de 1990',
-        title: 'La creación de COMEXUS',
-        text: 'La Comisión México-Estados Unidos para el Intercambio Educativo y Cultural (COMEXUS) se estableció mediante un acuerdo bilateral firmado en Monterrey, Nuevo León, en presencia del presidente de México, Carlos Salinas de Gortari, y del presidente de Estados Unidos, George H. W. Bush. Su misión: promover el entendimiento mutuo entre los pueblos de México y Estados Unidos a través del intercambio educativo y cultural.',
-        image: ASSETS.story.y1990,
-        imageAlt: 'Firma del acuerdo bilateral que estableció COMEXUS en Monterrey, 1990',
-      },
-      {
-        id: '1991',
-        year: 'Abril de 1991',
-        title: 'La primera sesión del Consejo Directivo',
-        text: 'El Consejo Directivo de la Comisión celebró su sesión inaugural en la Ciudad de México, un paso importante en la consolidación de su estructura institucional binacional.',
-        image: ASSETS.story.y1991,
-        imageAlt: 'Sesión inaugural del Consejo Directivo de COMEXUS, Ciudad de México, 1991',
-      },
-      {
-        id: '1992',
-        year: 'Enero de 1992',
-        title: 'El nombre Fulbright-García Robles',
-        text: 'Fiel al espíritu binacional de la Comisión, su Consejo aprobó designar todas las becas como Fulbright-García Robles, en honor al embajador emérito mexicano y Premio Nobel de la Paz, Alfonso García Robles.',
-        image: ASSETS.story.y1992,
-        imageAlt: 'Retrato del embajador Alfonso García Robles',
-      },
-    ],
-    closing: {
-      eyebrow: 'Un legado en movimiento',
-      paragraphs: [
-        'A lo largo de los años, COMEXUS ha desarrollado e impulsado una amplia gama de programas para estudiantes, académicos, investigadores, docentes y profesionales. Algunos programas han evolucionado, otros han concluido y han surgido nuevas oportunidades.',
-        'Cada uno ha contribuido a construir las relaciones académicas y culturales binacionales que hoy definen a COMEXUS.',
-      ],
-      highlight: '35 años conectando personas, instituciones y oportunidades más allá de las fronteras.',
-      signoff: 'Y la historia continúa.',
-    },
-  },
-  program: {
-    eyebrow: '2 de diciembre de 2026',
-    title: 'Programa del evento',
-    intro: 'Una velada de mensajes, reconocimientos y música en honor a un legado binacional compartido.',
-    toBeConfirmed: 'por confirmar',
-    entries: [
-      {
-        time: '7:10 p. m.',
-        title: 'Palabras de bienvenida',
-        icon: 'mic',
-        people: [
-          { name: 'Alma Calderón', note: 'Directora Ejecutiva Interina, COMEXUS' },
-          { name: 'Representante de la Secretaría de Educación Pública (SEP)' },
-          { name: 'Representante de la Secretaría de Relaciones Exteriores (SRE)' },
-          { name: 'Representante de la Embajada de Estados Unidos en la Ciudad de México / A/S Cate Dillon', note: 'tbc' },
-          { name: 'Representante de organizaciones aliadas y socios estratégicos' },
-        ],
-        segmentsTitle: 'Reconocimientos especiales y presentaciones',
-        segments: [
-          { kind: 'award', title: 'Reconocimiento al Liderazgo – Exbecarios' },
-          { kind: 'music', title: 'Presentación musical' },
-          { kind: 'award', title: 'Reconocimiento al Impacto – Exbecarios' },
-          { kind: 'music', title: 'Presentación musical' },
-        ],
-      },
-      { time: '8:00 p. m.', title: 'Cóctel', icon: 'glass' },
-      { time: '10:00 p. m.', title: 'Cierre del evento', icon: 'moon' },
-    ],
-    note: 'Nota: Los nombres y cargos de algunos representantes institucionales están sujetos a confirmación.',
-  },
-  milestones: {
-    eyebrow: 'Cuatro aniversarios, una velada',
-    title: 'Celebramos cuatro aniversarios',
-    intro: 'Esta gala reúne cuatro aniversarios que dan cuenta del poder del intercambio, las alianzas y los ideales compartidos.',
-    items: [
-      {
-        number: '35',
-        unit: 'Años',
-        title: 'de COMEXUS',
-        caption: 'La Comisión México-Estados Unidos para el Intercambio Educativo y Cultural.',
-        logo: ASSETS.logos.comexus35,
-        logoAlt: 'Logotipo del 35 aniversario de COMEXUS',
-      },
-      {
-        number: '80',
-        unit: 'Años',
-        title: 'del Programa Fulbright',
-        caption: 'El principal programa de intercambio educativo internacional de Estados Unidos.',
-        logo: ASSETS.logos.fulbright80Blue,
-        logoAlt: 'Logotipo del 80 aniversario del Programa Fulbright',
-      },
-      {
-        number: '30',
-        unit: 'Años',
-        title: 'del Programa Binacional de Negocios',
-        caption: 'Tres décadas de intercambio profesional entre México y Estados Unidos.',
-        emblem: 'bbp',
-      },
-      {
-        number: '250',
-        unit: 'Años',
-        title: 'de la Independencia de Estados Unidos',
-        caption: 'Freedom 250: conmemoración del 250 aniversario de Estados Unidos.',
-        logo: ASSETS.logos.freedom250,
-        logoAlt: 'Logotipo de Freedom 250',
-      },
-    ],
-  },
-  alumni: {
-    back: 'La Gala',
-    eyebrow: 'Conoce a los exbecarios',
-    title: 'Muestra de exbecarios',
-    intro: 'Exbecarios Fulbright-García Robles cuyo arte y música acompañan la celebración de esta noche.',
-    jumpTo: 'Ir a',
-    copyLink: 'Copiar enlace a este perfil',
-    copied: 'Enlace copiado',
-    photoPending: 'Retrato próximamente',
-    photography: {
-      eyebrow: 'Muestra fotográfica',
-      title: 'A través de su lente: muestra fotográfica de exbecarios Fulbright',
-      intro:
-        'Descubre el trabajo de exbecarios Fulbright-García Robles a través de una muestra fotográfica que celebra sus perspectivas, su creatividad y las historias que cuentan a través de su lente.',
-      curatorial:
-        'Las obras seleccionadas se proyectan en pantalla durante la gala. Explora a continuación los perfiles y portafolios digitales de los artistas.',
-      cta: 'Explora su obra',
-      people: [
-        {
-          id: 'photographer-1',
-          name: '[Nombre del fotógrafo 1]',
-          program: 'Fulbright-García Robles [Nombre del programa]',
-          cohort: '[Año / Generación]',
-          bio: '[Biografía breve: dos o tres frases sobre la trayectoria del artista, su disciplina y cómo su experiencia Fulbright influyó en su obra.]',
-          quote: '[Una frase o testimonio personal del fotógrafo sobre el intercambio, la mirada o las historias detrás de sus imágenes.]',
-          image: ASSETS.alumni.photographer1,
-        },
-        {
-          id: 'photographer-2',
-          name: '[Nombre del fotógrafo 2]',
-          program: 'Fulbright-García Robles [Nombre del programa]',
-          cohort: '[Año / Generación]',
-          bio: '[Biografía breve: dos o tres frases sobre la trayectoria del artista, su disciplina y cómo su experiencia Fulbright influyó en su obra.]',
-          quote: '[Una frase o testimonio personal del fotógrafo sobre el intercambio, la mirada o las historias detrás de sus imágenes.]',
-          image: ASSETS.alumni.photographer2,
-        },
-        {
-          id: 'photographer-3',
-          name: '[Nombre del fotógrafo 3]',
-          program: 'Fulbright-García Robles [Nombre del programa]',
-          cohort: '[Año / Generación]',
-          bio: '[Biografía breve: dos o tres frases sobre la trayectoria del artista, su disciplina y cómo su experiencia Fulbright influyó en su obra.]',
-          quote: '[Una frase o testimonio personal del fotógrafo sobre el intercambio, la mirada o las historias detrás de sus imágenes.]',
-          image: ASSETS.alumni.photographer3,
-        },
-      ],
-    },
-    music: {
-      eyebrow: 'Presentación musical',
-      title: 'Conoce al músico',
-      intro: 'Conoce al exbecario Fulbright-García Robles cuya interpretación musical acompañará nuestra celebración.',
-      careerLabel: 'Trayectoria musical y profesional',
-      linksLabel: 'Escucha y conecta',
-      linkLabels: {
-        website: 'Sitio web',
-        portfolio: 'Portafolio',
-        instagram: 'Instagram',
-        spotify: 'Spotify',
-        youtube: 'YouTube',
-        linkedin: 'LinkedIn',
-      },
-      person: {
-        id: 'musician',
-        name: '[Nombre del músico]',
-        program: 'Fulbright-García Robles [Nombre del programa]',
-        cohort: '[Año / Generación]',
-        bio: '[Biografía breve: quién es, su instrumento o voz y dónde estudió como becario Fulbright-García Robles.]',
-        career:
-          '[Descripción de su trayectoria musical y profesional: ensambles, grabaciones, escenarios destacados, docencia, investigación o colaboraciones que conectan a México y Estados Unidos.]',
-        image: ASSETS.alumni.musician,
-      },
-    },
-  },
-  footer: {
-    org: 'Comisión México-Estados Unidos para el Intercambio Educativo y Cultural',
-    tagline: '35 años conectando personas, instituciones y oportunidades más allá de las fronteras.',
-    backToTop: 'Volver arriba',
-    rights: 'COMEXUS · Fulbright-García Robles',
-  },
-};
-
-export const CONTENT: Record<Lang, GalaContent> = { en, es };
+export type GalaContent = typeof CONTENT;

@@ -2,7 +2,7 @@ import { motion, useReducedMotion, type HTMLMotionProps } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { DURATION, EASE_LUX, VIEWPORT_ONCE, riseItem, staggerParent } from '../../lib/motion';
 
-type Tag = 'div' | 'li' | 'article' | 'section' | 'ul' | 'ol' | 'p' | 'span';
+type Tag = 'div' | 'li' | 'article' | 'section' | 'ul' | 'ol' | 'p' | 'span' | 'h2' | 'h3';
 
 interface Props extends Omit<HTMLMotionProps<'div'>, 'children'> {
   children?: ReactNode;

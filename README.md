@@ -11,24 +11,21 @@ npm run dev      # local dev server
 npm run build    # production build in /dist
 ```
 
-## Views & QR deep links
+## Views & deep links
 
-Routing is hash-based, so a static host always serves `index.html` and a QR code can never 404.
+Routing is hash-based, so a static host always serves `index.html` and an external link can never 404.
 
-| QR / link | Lands on |
+| Link | Lands on |
 | --- | --- |
 | `https://<site>/#/alumni` | Alumni Showcase tab |
-| `https://<site>/#/alumni/photographer-1` | Photographer 1 profile (also `-2`, `-3`) |
+| `https://<site>/#/alumni/photographer-1` | Photographer 1 profile (also `-2` … `-6`) |
 | `https://<site>/#/alumni/musician` | Musician profile |
 | `https://<site>/?tab=alumni` · `?tab=alumni#photographer-2` · `#musician` | Also supported |
-| `https://<site>/#/overview/program` | Event Program section (`story`, `milestones` too) |
-| append `?lang=es` (e.g. `/?lang=es#/alumni`) | Opens in Spanish (default is English) |
-
-Each alumni card has a **copy-link** button that copies its canonical deep link — handy for generating the QR codes.
+| `https://<site>/#/overview/program` | Event Program section (`story`, `future`, `support`, `milestones` too) |
 
 ## Editing content
 
-Everything lives in **`src/data/galaData.ts`**: all English/Spanish copy, image paths (`ASSETS`) and alumni external links (`ALUMNI_LINKS`). Replace the `[Photographer Name 1]`-style placeholders there.
+The site is English only. Everything lives in **`src/data/galaData.ts`**: all copy (`CONTENT`), image paths (`ASSETS`), alumni external links (`ALUMNI_LINKS`) and the donation link (`DONATE_URL`). Replace the `[Photographer Name 1]`-style placeholders there.
 
 ## Images — `/public/assets/`
 
@@ -41,23 +38,24 @@ public/
 │   └── Charlon.woff2
 └── assets/
     ├── logos/
-    │   ├── comexus-35-anniversary.png        Hero band + 35 Years card
-    │   ├── fulbright-comexus.png             Footer
-    │   ├── fulbright-80th-anniversary-white.png   Hero band / footer (on navy)
+    │   ├── comexus-35-anniversary-white.png  Hero band + footer (on navy)
+    │   ├── comexus-35-anniversary-color.png  35 Years card (on ivory)
+    │   ├── fulbright-80th-anniversary-white.png   Hero band (on navy)
     │   ├── fulbright-80th-anniversary-blue.png    80 Years card (on ivory)
-    │   └── freedom-250-color.png             Hero band, 250 Years card, footer
+    │   ├── freedom-250-white.png             Hero band (on navy)
+    │   └── freedom-250-color.png             250 Years card (on ivory)
     ├── story/
-    │   ├── 1948-fulbright-mexico.jpg
-    │   ├── 1980s-growth.jpg
-    │   ├── 1990-comexus-established.jpg
-    │   ├── 1991-first-board-meeting.jpg
-    │   └── 1992-garcia-robles.jpg            (4:3 recommended)
+    │   ├── 1948-fulbright-mexico.jpg         (portrait, shown in a 3:4 frame)
+    │   ├── 1980s-growth.jpg                  (pending: elegant fallback until uploaded)
+    │   ├── 1990-comexus-established.png
+    │   ├── 1991-first-board-meeting.png
+    │   └── 1992-garcia-robles.jpg            (portrait, shown in a 3:4 frame)
     └── alumni/
-        ├── photographer-1.jpg
-        ├── photographer-2.jpg
-        ├── photographer-3.jpg                (4:5 portrait, ≥ 900 px wide)
+        ├── photographer-1.jpg … photographer-6.jpg   (4:5 portrait, ≥ 900 px wide)
         └── musician.jpg                      (4:5 portrait, ≥ 1200 px wide)
 ```
+
+Portrait timeline photos are flagged with `portrait: true` in `galaData.ts`; landscape ones use a 4:3 frame.
 
 Logos: transparent PNG or SVG (if SVG, change the extension in `galaData.ts`).
 

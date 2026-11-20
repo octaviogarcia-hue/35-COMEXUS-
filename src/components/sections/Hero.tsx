@@ -1,8 +1,7 @@
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, CalendarDays, ChevronDown, Clock, MapPin, QrCode } from 'lucide-react';
+import { CalendarDays, ChevronDown, Clock, MapPin } from 'lucide-react';
 import { Fragment, useRef, useState } from 'react';
-import { ASSETS } from '../../data/galaData';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { ASSETS, CONTENT } from '../../data/galaData';
 import { EASE_LUX } from '../../lib/motion';
 import { Comexus35Mark, Freedom250Mark, Fulbright80Mark, LogoSlot } from '../ui/Logos';
 import Ornament, { Eyebrow } from '../ui/Ornament';
@@ -28,13 +27,12 @@ const T = {
 };
 
 interface Props {
-  onMeetAlumni: () => void;
   onViewProgram: () => void;
   onScrollNext: () => void;
 }
 
-export default function Hero({ onMeetAlumni, onViewProgram, onScrollNext }: Props) {
-  const { t } = useLanguage();
+export default function Hero({ onViewProgram, onScrollNext }: Props) {
+  const t = CONTENT;
   const h = t.hero;
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
@@ -144,18 +142,8 @@ export default function Hero({ onMeetAlumni, onViewProgram, onScrollNext }: Prop
           })}
         </motion.dl>
 
-        {/* CTAs */}
+        {/* CTA */}
         <motion.div {...rise(T.cta)} className="mt-8 flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <button
-            type="button"
-            onClick={onMeetAlumni}
-            className="group inline-flex w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full border border-champagne px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.16em] text-champagne transition-colors duration-500 ease-lux hover:bg-champagne hover:text-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne sm:w-auto"
-          >
-            <QrCode className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-            {h.ctaAlumni}
-            <span className="hidden rounded-full border border-current/40 px-2 py-0.5 text-[0.6rem] tracking-[0.18em] opacity-80 min-[400px]:inline">{h.ctaAlumniHint}</span>
-            <ArrowRight className="h-4 w-4 transition-transform duration-500 ease-lux group-hover:translate-x-1" strokeWidth={1.5} aria-hidden="true" />
-          </button>
           <button
             type="button"
             onClick={onViewProgram}

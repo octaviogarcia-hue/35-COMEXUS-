@@ -94,28 +94,3 @@ export function Freedom250Mark({ className = 'h-12' }: { tone?: Tone; className?
     </svg>
   );
 }
-
-/** Typographic seal for the 30 Years of the Binational Business Program (no official logo). */
-export function BbpEmblem({ className = 'h-28 w-28', label = 'BINATIONAL BUSINESS PROGRAM' }: { className?: string; label?: string }) {
-  return (
-    <svg viewBox="0 0 120 120" className={className} role="img" aria-label={`30 · ${label}`}>
-      <defs>
-        <path id="bbp-arc" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0" />
-      </defs>
-      <circle cx="60" cy="60" r="57" fill="none" stroke="#C9A66B" strokeWidth="1" />
-      <circle cx="60" cy="60" r="35" fill="#003DA5" />
-      <circle cx="60" cy="60" r="31.5" fill="none" stroke="#C9A66B" strokeWidth="0.6" />
-      <text fontFamily="'Plus Jakarta Sans', sans-serif" fontSize="7.4" fontWeight="600" letterSpacing="2.1" fill="#002B49">
-        <textPath href="#bbp-arc" startOffset="2%">
-          {label} · 1996–2026 ·
-        </textPath>
-      </text>
-      <text x="60" y="68" textAnchor="middle" fontFamily="Oranienbaum, Georgia, serif" fontSize="30" fill="#F3EBDD">
-        30
-      </text>
-      <text x="60" y="80" textAnchor="middle" fontFamily="'Plus Jakarta Sans', sans-serif" fontSize="6" letterSpacing="2.4" fill="#C9A66B">
-        BBP
-      </text>
-    </svg>
-  );
-}
