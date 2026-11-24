@@ -1,6 +1,6 @@
-import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
 import { ImageIcon } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { CONTENT } from '../../data/galaData';
 import type { TimelineItem } from '../../data/galaData';
 import ImageWithFallback from '../ui/ImageWithFallback';
@@ -31,25 +31,30 @@ const FRAME = 'relative w-full overflow-hidden rounded-[2px] shadow-[0_24px_50px
 const ARCHIVAL_TONE = 'grayscale-[35%] sepia-[15%]';
 
 /**
- * 4:3 archival frame whose image drifts a few percent against the scroll.
- * The inner layer is taller than the frame, so the edges never show.
+ * Landscape archival photo shown at its own proportions: full width of the
+ * frame, height follows the image, nothing cropped and no scroll zoom or drift.
+ * While the file is missing it keeps a 4:3 frame with the elegant fallback.
  */
-function ParallaxPhoto({ item, photoPending }: { item: TimelineItem; photoPending: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
-  const y = useTransform(scrollYProgress, [0, 1], reduce ? ['0%', '0%'] : ['-5%', '5%']);
+function LandscapePhoto({ item, photoPending }: { item: TimelineItem; photoPending: string }) {
+  const [state, setState] = useState<'loading' | 'ok' | 'error'>('loading');
   return (
-    <div ref={ref} className={`${FRAME} aspect-[4/3]`}>
-      <motion.div style={{ y }} className="absolute inset-x-0 -inset-y-[7%] will-change-transform">
-        <ImageWithFallback
+    <div className={`${FRAME} ${state === 'ok' ? '' : 'aspect-[4/3]'}`}>
+      {state !== 'ok' && (
+        <div className="absolute inset-0">
+          <ArchivalFallback year={item.id} label={photoPending} />
+        </div>
+      )}
+      {state !== 'error' && (
+        <img
           src={item.image}
           alt={item.imageAlt}
-          className="h-full w-full"
-          imgClassName={ARCHIVAL_TONE}
-          fallback={<ArchivalFallback year={item.id} label={photoPending} />}
+          loading="lazy"
+          decoding="async"
+          onLoad={() => setState('ok')}
+          onError={() => setState('error')}
+          className={`relative block h-auto w-full object-contain transition-opacity duration-700 ${state === 'ok' ? 'opacity-100' : 'opacity-0'} ${ARCHIVAL_TONE}`}
         />
-      </motion.div>
+      )}
     </div>
   );
 }
@@ -100,7 +105,7 @@ function Milestone({ item, index, photoPending }: { item: TimelineItem; index: n
         className={`col-start-2 pb-14 md:row-start-1 md:pb-20 ${flip ? 'md:col-start-1 md:pr-10' : 'md:col-start-3 md:pl-10'}`}
       >
         <figure className={`relative ${item.portrait ? `max-w-[17rem] sm:max-w-[19rem] ${flip ? 'md:ml-auto' : ''}` : ''}`}>
-          {item.portrait ? <PortraitPhoto item={item} photoPending={photoPending} /> : <ParallaxPhoto item={item} photoPending={photoPending} />}
+          {item.portrait ? <PortraitPhoto item={item} photoPending={photoPending} /> : <LandscapePhoto item={item} photoPending={photoPending} />}
           <span aria-hidden="true" className="pointer-events-none absolute -inset-2 rounded-[2px] border border-champagne/50" />
         </figure>
       </Reveal>
