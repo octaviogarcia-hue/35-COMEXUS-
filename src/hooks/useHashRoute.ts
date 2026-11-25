@@ -7,7 +7,7 @@ import { OVERVIEW_SECTION_IDS, PROFILE_IDS, type TabId } from '../data/galaData'
  *
  * Every one of these lands on the right place:
  *   #/alumni                      → Alumni tab
- *   #/alumni/photographer-2       → Alumni tab, scrolled to that profile (canonical form; photographer-1 … -6)
+ *   #/alumni/photographer-2       → Alumni tab, scrolled to that profile (canonical form; photographer-1 … -5; photographers open in a modal)
  *   #photographer-2 · #musician   → same (short anchor form)
  *   ?tab=alumni                   → Alumni tab
  *   ?tab=alumni#photographer-2    → Alumni tab + profile
@@ -62,15 +62,21 @@ export function useHashRoute() {
     };
   }, []);
 
-  const navigate = useCallback((tab: TabId, anchor: string | null = null) => {
+  /**
+   * `push` adds a history entry (Back returns here); `replace` swaps the current
+   * one (used to step between fellows inside the modal). `state` is stored on the
+   * entry so the modal knows whether it was opened from inside the app.
+   */
+  const navigate = useCallback((tab: TabId, anchor: string | null = null, mode: 'push' | 'replace' = 'push', state: unknown = null) => {
     const hash = buildHash(tab, anchor);
-    if (window.location.hash !== hash) {
+    if (window.location.hash !== hash || mode === 'replace') {
       try {
         // Drop ?tab= once inside the app so the hash is the single source of truth.
         const url = new URL(window.location.href);
         url.searchParams.delete('tab');
         url.hash = hash;
-        window.history.pushState(null, '', url.toString());
+        if (mode === 'replace') window.history.replaceState(state, '', url.toString());
+        else window.history.pushState(state, '', url.toString());
       } catch {
         window.location.hash = hash;
       }
