@@ -1,4 +1,4 @@
-import { ImageIcon, UserRound } from 'lucide-react';
+import { Camera, UserRound } from 'lucide-react';
 import { useState } from 'react';
 
 /** A link is shown only when it is real: "" and "#" hide the button (no broken links in production). */
@@ -32,9 +32,20 @@ export function WorkImage({
   return (
     <div className={`relative overflow-hidden bg-[#0d1b2a] ${stage}`}>
       {state !== 'ok' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-b from-legacy/25 to-navy">
-          <ImageIcon className="h-8 w-8 text-champagne/60" strokeWidth={1} aria-hidden="true" />
-          {state === 'error' && <span className="text-[0.62rem] uppercase tracking-[0.26em] text-ivory/55">{pending}</span>}
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[radial-gradient(circle_at_50%_40%,rgba(0,119,200,0.22),transparent_65%)] bg-navy">
+          <span aria-hidden="true" className="pointer-events-none absolute inset-3 border border-champagne/20" />
+          {state === 'error' && (
+            <>
+              <span className="grid h-14 w-14 place-items-center rounded-full border border-champagne/50 text-champagne/80">
+                <Camera className="h-6 w-6" strokeWidth={1} aria-hidden="true" />
+              </span>
+              <span className="flex items-center gap-3 text-[0.62rem] uppercase tracking-[0.26em] text-ivory/60">
+                <span aria-hidden="true" className="h-px w-6 bg-champagne/50" />
+                {pending}
+                <span aria-hidden="true" className="h-px w-6 bg-champagne/50" />
+              </span>
+            </>
+          )}
         </div>
       )}
       {state !== 'error' && (

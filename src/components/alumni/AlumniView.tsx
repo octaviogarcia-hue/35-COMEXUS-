@@ -41,8 +41,6 @@ function PortraitFallback({ label, tone = 'ivory' }: { label: string; tone?: 'iv
  */
 function PhotographerCard({ person, index, highlighted, onOpen }: { person: Photographer; index: number; highlighted: boolean; onOpen: (id: ProfileId) => void }) {
   const ph = CONTENT.alumni.photography;
-  // 5 cards: 3 + 2 on desktop and 2 + 2 + 1 on tablet, with the short rows centred.
-  const place = index === 3 ? 'lg:col-start-2' : index === 4 ? 'md:col-start-2 lg:col-start-auto' : '';
 
   return (
     <Reveal
@@ -50,7 +48,7 @@ function PhotographerCard({ person, index, highlighted, onOpen }: { person: Phot
       delay={(index % 3) * 0.1}
       id={person.id}
       aria-labelledby={`${person.id}-name`}
-      className={`group/card relative flex h-full scroll-mt-[calc(var(--nav-h)+1rem)] cursor-pointer flex-col overflow-hidden rounded-[2px] border bg-[#F8F3EA] shadow-[0_24px_50px_-30px_rgba(0,0,0,0.7)] transition-[box-shadow,border-color,transform] duration-700 ease-lux hover:-translate-y-1 hover:border-champagne hover:shadow-[0_36px_64px_-30px_rgba(0,0,0,0.85)] motion-reduce:hover:translate-y-0 md:col-span-2 ${place} ${
+      className={`group/card relative flex h-full scroll-mt-[calc(var(--nav-h)+1rem)] cursor-pointer flex-col overflow-hidden rounded-[2px] border bg-[#F8F3EA] shadow-[0_24px_50px_-30px_rgba(0,0,0,0.7)] transition-[box-shadow,border-color,transform] duration-700 ease-lux hover:-translate-y-1 hover:border-champagne hover:shadow-[0_36px_64px_-30px_rgba(0,0,0,0.85)] motion-reduce:hover:translate-y-0 ${
         highlighted ? 'border-champagne ring-2 ring-champagne/60 ring-offset-4 ring-offset-navy' : 'border-champagne/45'
       }`}
     >
@@ -88,7 +86,7 @@ function PhotographerCard({ person, index, highlighted, onOpen }: { person: Phot
 
         <span className="mt-auto inline-flex items-center gap-2 pt-6 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-navy">
           <span className="relative">
-            {ph.cardCta}
+            {person.pending ? ph.cardCtaPending : ph.cardCta}
             <span aria-hidden="true" className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-[0.35] bg-champagne transition-transform duration-700 ease-lux group-hover/card:scale-x-100" />
           </span>
           <ArrowRight className="h-4 w-4 text-champagne transition-transform duration-500 ease-lux group-hover/card:translate-x-1" strokeWidth={1.5} aria-hidden="true" />
@@ -246,7 +244,7 @@ export default function AlumniView({ onBack, onJump, highlighted, openId, onOpen
             <p className="mx-auto mt-5 max-w-xl border-y border-champagne/30 py-3 text-[0.85rem] italic leading-relaxed text-ivory/60">{a.photography.curatorial}</p>
           </Reveal>
 
-          <div className="mt-12 grid grid-cols-1 gap-7 md:grid-cols-4 lg:grid-cols-6">
+          <div className="mt-12 grid auto-rows-fr grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
             {a.photography.people.map((person, i) => (
               <PhotographerCard key={person.id} person={person} index={i} highlighted={highlighted === person.id && openId !== person.id} onOpen={onOpen} />
             ))}

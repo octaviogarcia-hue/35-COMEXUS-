@@ -7,7 +7,7 @@ import { OVERVIEW_SECTION_IDS, PROFILE_IDS, type TabId } from '../data/galaData'
  *
  * Every one of these lands on the right place:
  *   #/alumni                      → Alumni tab
- *   #/alumni/photographer-2       → Alumni tab, scrolled to that profile (canonical form; photographer-1 … -5; photographers open in a modal)
+ *   #/alumni/photographer-2       → Alumni tab, scrolled to that profile (canonical form; photographer-1 … -6; photographers open in a modal)
  *   #photographer-2 · #musician   → same (short anchor form)
  *   ?tab=alumni                   → Alumni tab
  *   ?tab=alumni#photographer-2    → Alumni tab + profile

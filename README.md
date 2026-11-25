@@ -18,7 +18,7 @@ Routing is hash-based, so a static host always serves `index.html` and an extern
 | Link | Lands on |
 | --- | --- |
 | `https://<site>/#/alumni` | Alumni Showcase tab |
-| `https://<site>/#/alumni/photographer-1` | Alumni page with Photographer 1’s profile open in a modal (also `-2` … `-5`) |
+| `https://<site>/#/alumni/photographer-1` | Alumni page with Photographer 1’s profile open in a modal (also `-2` … `-6`) |
 | `https://<site>/#/alumni/musician` | Musician profile |
 | `https://<site>/?tab=alumni` · `?tab=alumni#photographer-2` · `#musician` | Also supported |
 | `https://<site>/#/overview/program` | Event Program section (`story`, `future`, `support`, `milestones` too) |
@@ -51,8 +51,8 @@ public/
     │   ├── 1991-first-board-meeting.png
     │   └── 1992-garcia-robles.jpg            (portrait, shown in a 3:4 frame)
     └── alumni/
-        ├── photographer-1.jpg … photographer-5.jpg   (portrait, shown as a round medallion)
-        ├── photographer-1-work.jpg … photographer-5-work.jpg   (featured work, any proportion, never cropped)
+        ├── photographer-1.jpg … photographer-6.jpg   (portrait, shown as a round medallion)
+        ├── photographer-1-work.jpg … photographer-6-work.jpg   (featured work, any proportion, never cropped)
         └── musician.jpg                      (4:5 portrait, ≥ 1200 px wide)
 ```
 
