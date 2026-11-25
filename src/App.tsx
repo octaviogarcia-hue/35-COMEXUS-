@@ -29,6 +29,8 @@ function scrollToId(id: string, smooth: boolean) {
 }
 
 const isProfile = (id: string) => (PROFILE_IDS as readonly string[]).includes(id);
+/** Photographer anchors open a modal; the page itself only scrolls behind it on a fresh landing. */
+const isModalProfile = (id: string | null) => !!id && id.startsWith('photographer-');
 
 export default function App() {
   const { route, navigate } = useHashRoute();
@@ -81,6 +83,8 @@ export default function App() {
       return;
     }
     const anchor = route.anchor;
+    // Opening / stepping through a fellow's modal from inside the page: leave the grid where it is.
+    if (isModalProfile(anchor) && !isFirst && !tabChanged) return;
     timers.push(window.setTimeout(() => land(anchor, !isFirst && !tabChanged && !reduce), isFirst || tabChanged ? 120 : 0));
     return () => timers.forEach(clearTimeout);
   }, [route, reduce, land]);
@@ -121,7 +125,7 @@ export default function App() {
           transition={{ duration: TAB_FADE_S, ease: EASE_LUX }}
           onAnimationComplete={onTabEntered}
         >
-          {route.tab === 'overview' ? <GalaOverview onNavigate={navigate} /> : <AlumniShowcase onNavigate={navigate} highlighted={highlight} />}
+          {route.tab === 'overview' ? <GalaOverview onNavigate={navigate} /> : <AlumniShowcase onNavigate={navigate} highlighted={highlight} anchor={route.anchor} />}
         </motion.main>
       </AnimatePresence>
 

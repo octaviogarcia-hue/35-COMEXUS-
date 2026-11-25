@@ -363,6 +363,8 @@ export const CONTENT = {
       quoteLabel: 'Fulbright Impact',
       workLabel: 'Featured work',
       workPending: 'Featured work coming soon',
+      cardCta: 'Read Story & View Work',
+      modal: { close: 'Close', previous: 'Previous Fellow', next: 'Next Fellow', navLabel: 'Browse fellows' },
       people: [
         {
           id: 'photographer-1',
