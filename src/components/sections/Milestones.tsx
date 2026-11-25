@@ -13,7 +13,9 @@ function MilestoneLogo({ item, index }: { item: Milestone; index: number }) {
   const fallbacks = [
     <Comexus35Mark key="c" tone="dark" className="h-12" />,
     <Fulbright80Mark key="f" tone="dark" className="h-12" />,
-    null,
+    <span key="b" className="font-display text-sm uppercase tracking-[0.2em] text-navy/60">
+      Fulbright-COMEXUS
+    </span>,
     <div key="fr" className="rounded-sm bg-navy px-3 py-1.5">
       <Freedom250Mark className="h-10" />
     </div>,
