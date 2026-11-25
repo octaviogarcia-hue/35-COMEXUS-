@@ -24,6 +24,7 @@ export const ASSETS = {
     fulbright80Blue: asset('logos/fulbright-80th-anniversary-blue.png'),
     freedom250: asset('logos/freedom-250-color.png'), // navy + gold, for light backgrounds
     freedom250White: asset('logos/freedom-250-white.png'), // white + gold, for Navy backgrounds
+    binationalBusiness: asset('logos/logo_original4.png'), // Fulbright-COMEXUS colour mark, for the 30-year BBP card
   },
   story: {
     y1948: asset('story/1948-fulbright-mexico.jpg'),
@@ -328,6 +329,8 @@ export const CONTENT = {
         unit: 'Years',
         title: 'of the Binational Business Program',
         caption: 'Building connections and fostering a deeper understanding between Mexico’s and the United States’ private sectors.',
+        logo: ASSETS.logos.binationalBusiness,
+        logoAlt: 'Fulbright-COMEXUS logo · Binational Business Program',
       },
       {
         number: '250',
@@ -439,7 +442,7 @@ export const CONTENT = {
     tagline: '35 years of connecting people, institutions, and opportunities across borders.',
     backToTop: 'Back to top',
     rights: 'COMEXUS · Fulbright-García Robles',
-    credit: { label: 'Developed by', name: 'eiteen_gc', href: 'mailto:hellosarly@sarlystudio.com' },
+    credit: { label: 'Developed by', name: 'hellosarly@sarlystudio.com', href: 'mailto:hellosarly@sarlystudio.com' },
   },
 };
 
