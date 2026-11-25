@@ -1,5 +1,5 @@
 import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
-import { Award, GlassWater, Mic2, MoonStar, Music2 } from 'lucide-react';
+import { Award, GlassWater, Mic2, MoonStar, Music2, Sparkles } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { CONTENT } from '../../data/galaData';
 import type { ProgramEntry } from '../../data/galaData';
@@ -13,6 +13,7 @@ const ICONS: Record<ProgramEntry['icon'], typeof Mic2> = {
   music: Music2,
   glass: GlassWater,
   moon: MoonStar,
+  spotlight: Sparkles,
 };
 
 export default function EventProgram() {
@@ -98,16 +99,12 @@ export default function EventProgram() {
 
                   {entry.people && (
                     <ul className="mt-4 divide-y divide-champagne/15 border-y border-champagne/15">
-                      {entry.people.map((person) => {
-                        const tbc = person.note === 'tbc';
-                        return (
-                          <li key={person.name} className="py-3 text-[0.95rem] leading-snug">
-                            <span className="text-ivory/90">{person.name}</span>
-                            {person.note && !tbc && <span className="mt-0.5 block text-[0.82rem] text-ivory/55">{person.note}</span>}
-                            {tbc && <em className="ml-1 text-[0.82rem] not-italic text-champagne/75">({p.toBeConfirmed})</em>}
-                          </li>
-                        );
-                      })}
+                      {entry.people.map((person) => (
+                        <li key={person.name} className="py-3 text-[0.95rem] leading-snug">
+                          <span className="text-ivory/90">{person.name}</span>
+                          {person.note && <span className="mt-0.5 block text-[0.82rem] italic text-ivory/55">{person.note}</span>}
+                        </li>
+                      ))}
                     </ul>
                   )}
 
@@ -134,9 +131,6 @@ export default function EventProgram() {
           })}
         </ol>
 
-        <Reveal>
-          <p className="mx-auto mt-14 max-w-xl border-t border-champagne/20 pt-6 text-center text-[0.8rem] italic leading-relaxed text-ivory/50">{p.note}</p>
-        </Reveal>
       </div>
     </section>
   );
