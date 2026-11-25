@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, Camera, Globe, Music2, Quote, UserRound } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, ArrowUpRight, Camera, Globe, ImageIcon, Music2, PlayCircle, Quote, UserRound } from 'lucide-react';
 import { ALUMNI_LINKS, CONTENT, type Musician, type Photographer, type ProfileId } from '../../data/galaData';
 import { EASE_LUX } from '../../lib/motion';
 import ImageWithFallback from '../ui/ImageWithFallback';
@@ -26,68 +27,150 @@ function PortraitFallback({ label, tone = 'ivory' }: { label: string; tone?: 'iv
   );
 }
 
-const isUsable = (href?: string) => !!href && href.trim() !== '';
+/** A link is shown only when it is real: "" and "#" hide the button (no broken links in production). */
+const isUsable = (href?: string) => !!href && href.trim() !== '' && href.trim() !== '#';
 
 /* ─────────────────────────── photographer ─────────────────────────── */
 
+/** Featured work: full width, natural height — the artist's composition is never cropped. */
+function WorkImage({ src, alt, pending }: { src: string; alt: string; pending: string }) {
+  const [state, setState] = useState<'loading' | 'ok' | 'error'>('loading');
+  return (
+    <div className={`relative overflow-hidden bg-[#0d1b2a] ${state === 'ok' ? '' : 'aspect-[4/3]'}`}>
+      {state !== 'ok' && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-b from-legacy/25 to-navy">
+          <ImageIcon className="h-8 w-8 text-champagne/60" strokeWidth={1} aria-hidden="true" />
+          {state === 'error' && <span className="text-[0.62rem] uppercase tracking-[0.26em] text-ivory/55">{pending}</span>}
+        </div>
+      )}
+      {state !== 'error' && (
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          onLoad={() => setState('ok')}
+          onError={() => setState('error')}
+          className={`relative block h-auto w-full object-contain transition-opacity duration-700 ${state === 'ok' ? 'opacity-100' : 'opacity-0'}`}
+        />
+      )}
+    </div>
+  );
+}
+
+/** Round portrait medallion with a Champagne ring. */
+function PortraitMedallion({ src, alt, position }: { src: string; alt: string; position?: string }) {
+  const [state, setState] = useState<'loading' | 'ok' | 'error'>('loading');
+  return (
+    <span className="relative block h-20 w-20 shrink-0 overflow-hidden rounded-full border border-champagne bg-gradient-to-b from-[#E9DFCC] to-[#DCCDB2] shadow-[0_0_0_4px_#F8F3EA,0_0_0_5px_rgba(201,166,107,0.45)] sm:h-24 sm:w-24">
+      {state !== 'ok' && (
+        <span className="absolute inset-0 grid place-items-center text-navy/40">
+          <UserRound className="h-9 w-9" strokeWidth={1} aria-hidden="true" />
+        </span>
+      )}
+      {state !== 'error' && (
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          onLoad={() => setState('ok')}
+          onError={() => setState('error')}
+          style={{ objectPosition: position ?? '50% 35%' }}
+          className={`relative h-full w-full object-cover transition-opacity duration-700 ${state === 'ok' ? 'opacity-100' : 'opacity-0'}`}
+        />
+      )}
+    </span>
+  );
+}
+
 function PhotographerCard({ person, index, highlighted }: { person: Photographer; index: number; highlighted: boolean }) {
-  const t = CONTENT;
-  const link = ALUMNI_LINKS[person.id].portfolio;
+  const ph = CONTENT.alumni.photography;
+  const links = ALUMNI_LINKS[person.id];
+  const flip = index % 2 === 1; // alternate work left / right on large screens
+  const workCaption = person.workTitle ? `${ph.workLabel} · ${person.workTitle}` : ph.workLabel;
+
   return (
     <Reveal
       as="article"
-      delay={index * 0.1}
       id={person.id}
       aria-labelledby={`${person.id}-name`}
-      className={`group/card relative flex scroll-mt-[calc(var(--nav-h)+1rem)] flex-col rounded-[2px] border bg-[#F8F3EA] shadow-[0_24px_50px_-30px_rgba(0,0,0,0.7)] transition-[box-shadow,border-color] duration-700 ease-lux hover:shadow-[0_34px_60px_-30px_rgba(0,0,0,0.8)] ${
+      className={`group/card relative grid scroll-mt-[calc(var(--nav-h)+1rem)] overflow-hidden rounded-[2px] border bg-[#F8F3EA] shadow-[0_24px_50px_-30px_rgba(0,0,0,0.7)] transition-[box-shadow,border-color] duration-700 ease-lux hover:shadow-[0_34px_60px_-30px_rgba(0,0,0,0.8)] lg:grid-cols-2 ${
         highlighted ? 'border-champagne ring-2 ring-champagne/60 ring-offset-4 ring-offset-navy' : 'border-champagne/45'
       }`}
     >
-      <div className="relative overflow-hidden rounded-t-[2px]">
-        <ImageWithFallback
-          src={person.image}
-          alt={person.name}
-          zoom
-          className="aspect-square w-full sm:aspect-[4/5]"
-          fallback={<PortraitFallback label={t.alumni.photoPending} />}
-        />
-        <span className="absolute left-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-navy/85 font-display text-lg text-champagne backdrop-blur">
-          {String(index + 1).padStart(2, '0')}
-        </span>
-      </div>
+      {/* Featured work — framed like a print, shown whole */}
+      <figure className={`relative flex flex-col justify-center bg-navy p-4 sm:p-6 lg:p-8 ${flip ? 'lg:order-2' : ''}`}>
+        <div className="relative border border-champagne/50 p-1.5 sm:p-2">
+          <span aria-hidden="true" className="pointer-events-none absolute inset-0 border border-champagne/15 [margin:-5px]" />
+          <WorkImage src={person.work} alt={`${workCaption} — ${person.name}`} pending={ph.workPending} />
+        </div>
+        <figcaption className="mt-3 flex items-center justify-between gap-3 text-[0.65rem] uppercase tracking-[0.24em] text-champagne/80">
+          <span>
+            {ph.workLabel}
+            {person.workTitle && <em className="ml-2 font-display text-[0.95rem] normal-case tracking-[0.02em] text-ivory/85">{person.workTitle}</em>}
+          </span>
+          <span aria-hidden="true" className="font-display text-xl tracking-normal text-champagne/40">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+        </figcaption>
+      </figure>
 
-      {/* Card copy arrives line by line after the frame */}
-      <RevealGroup stagger={0.09} delay={0.25 + index * 0.1} className="flex flex-1 flex-col p-6 sm:p-7">
-        <RevealItem y={14}>
-          <h3 id={`${person.id}-name`} className="font-display text-[1.75rem] leading-tight tracking-[0.02em] text-navy">
-            {person.name}
-          </h3>
-          <p className="mt-2 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-legacy">{person.program}</p>
-          <p className="mt-1 text-[0.82rem] text-navy/60">{person.cohort}</p>
+      {/* Copy arrives line by line */}
+      <RevealGroup stagger={0.09} delay={0.2} className="flex flex-col p-6 sm:p-8 lg:p-10">
+        <RevealItem y={14} className="flex items-center gap-5">
+          <PortraitMedallion src={person.image} alt={`Portrait of ${person.name}`} position={person.imagePosition} />
+          <div className="min-w-0">
+            <h3 id={`${person.id}-name`} className="font-display text-[1.75rem] leading-tight tracking-[0.02em] text-navy sm:text-[2rem]">
+              {person.name}
+            </h3>
+            <p className="mt-1.5 text-[0.72rem] font-semibold uppercase leading-snug tracking-[0.14em] text-legacy">{person.program}</p>
+          </div>
         </RevealItem>
-        <RevealItem as="p" y={14} className="mt-4 text-[0.95rem] leading-relaxed text-navy/80">
+
+        <RevealItem as="p" y={14} className="mt-6 text-pretty text-[0.95rem] leading-relaxed text-navy/80">
           {person.bio}
         </RevealItem>
 
-        <RevealItem y={14} className="relative mt-6">
-          <blockquote className="relative border-l-2 border-champagne pl-4">
-            <Quote className="absolute -left-[0.6rem] -top-3 h-5 w-5 rounded-full bg-[#F8F3EA] p-0.5 text-champagne" strokeWidth={1.5} aria-hidden="true" />
-            <p className="font-display text-[1.1rem] italic leading-snug text-navy">“{person.quote}”</p>
-          </blockquote>
-        </RevealItem>
+        {person.quote && (
+          <RevealItem y={14} className="relative mt-7">
+            <p className="mb-3 text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-champagne">{ph.quoteLabel}</p>
+            <blockquote className="relative border-l-2 border-champagne pl-4">
+              <Quote className="absolute -left-[0.6rem] -top-3 h-5 w-5 rounded-full bg-[#F8F3EA] p-0.5 text-champagne" strokeWidth={1.5} aria-hidden="true" />
+              <p className="text-pretty font-display text-[1.08rem] italic leading-snug text-navy">“{person.quote}”</p>
+            </blockquote>
+          </RevealItem>
+        )}
 
-        <RevealItem y={10} className="mt-auto pt-7">
-          <a
-            href={link || '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy px-6 py-3.5 text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ivory transition-colors duration-500 ease-lux hover:bg-legacy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne"
-          >
-            <Camera className="h-4 w-4 text-champagne" strokeWidth={1.5} aria-hidden="true" />
-            {t.alumni.photography.cta}
-            <ArrowUpRight className="h-4 w-4 transition-transform duration-500 ease-lux group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.5} aria-hidden="true" />
-          </a>
-        </RevealItem>
+        {(isUsable(links.portfolio) || isUsable(links.secondary?.href)) && (
+          <RevealItem y={10} className="mt-auto flex flex-col items-center gap-4 pt-8 sm:flex-row sm:flex-wrap">
+            {isUsable(links.portfolio) && (
+              <a
+                href={links.portfolio}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-navy px-6 py-3.5 text-[0.78rem] font-semibold uppercase tracking-[0.16em] text-ivory transition-colors duration-500 ease-lux hover:bg-legacy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-champagne sm:w-auto"
+              >
+                <Camera className="h-4 w-4 text-champagne" strokeWidth={1.5} aria-hidden="true" />
+                {ph.cta}
+                <ArrowUpRight className="h-4 w-4 transition-transform duration-500 ease-lux group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.5} aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
+            {links.secondary && isUsable(links.secondary.href) && (
+              <a
+                href={links.secondary.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-[44px] items-center gap-1.5 text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-legacy underline decoration-champagne/50 underline-offset-4 transition-colors hover:text-navy hover:decoration-champagne"
+              >
+                <PlayCircle className="h-4 w-4 text-champagne" strokeWidth={1.5} aria-hidden="true" />
+                {links.secondary.label}
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
+          </RevealItem>
+        )}
       </RevealGroup>
     </Reveal>
   );
@@ -241,7 +324,7 @@ export default function AlumniView({ onBack, onJump, highlighted }: Props) {
             <p className="mx-auto mt-5 max-w-xl border-y border-champagne/30 py-3 text-[0.85rem] italic leading-relaxed text-ivory/60">{a.photography.curatorial}</p>
           </Reveal>
 
-          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-7">
+          <div className="mt-12 space-y-10 sm:space-y-14">
             {a.photography.people.map((person, i) => (
               <PhotographerCard key={person.id} person={person} index={i} highlighted={highlighted === person.id} />
             ))}

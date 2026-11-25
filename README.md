@@ -51,7 +51,8 @@ public/
     │   ├── 1991-first-board-meeting.png
     │   └── 1992-garcia-robles.jpg            (portrait, shown in a 3:4 frame)
     └── alumni/
-        ├── photographer-1.jpg … photographer-6.jpg   (4:5 portrait, ≥ 900 px wide)
+        ├── photographer-1.jpg … photographer-5.jpg   (portrait, shown as a round medallion)
+        ├── photographer-1-work.jpg … photographer-5-work.jpg   (featured work, any proportion, never cropped)
         └── musician.jpg                      (4:5 portrait, ≥ 1200 px wide)
 ```
 
