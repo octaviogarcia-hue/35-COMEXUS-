@@ -45,6 +45,8 @@ export const ASSETS = {
     photographer4Work: asset('alumni/photographer-4-work.jpg'),
     photographer5: asset('alumni/photographer-5.jpg'),
     photographer5Work: asset('alumni/photographer-5-work.jpg'),
+    photographer6: asset('alumni/photographer-6.jpg'), // reserved — sixth fellow pending
+    photographer6Work: asset('alumni/photographer-6-work.jpg'),
     musician: asset('alumni/musician.jpg'),
   },
 } as const;
@@ -58,6 +60,7 @@ export const PROFILE_IDS = [
   'photographer-3',
   'photographer-4',
   'photographer-5',
+  'photographer-6',
   'musician',
 ] as const;
 export type ProfileId = (typeof PROFILE_IDS)[number];
@@ -84,6 +87,7 @@ export const ALUMNI_LINKS: Record<ProfileId, ProfileLinks> = {
   'photographer-3': { portfolio: '#' }, // pending official link — button hidden while "#"
   'photographer-4': { portfolio: '#' }, // pending official link — button hidden while "#"
   'photographer-5': { portfolio: 'https://andrescaballero.me' },
+  'photographer-6': { portfolio: '#' }, // reserved profile — button hidden while "#"
   musician: { portfolio: '', website: '#' },
 };
 
@@ -135,6 +139,8 @@ export interface Photographer {
   /** Featured work, shown uncropped at its own proportions. */
   work: string;
   workTitle?: string;
+  /** Reserved slot: profile and work arrive later (softer card call to action). */
+  pending?: boolean;
 }
 
 export interface Musician {
@@ -364,6 +370,7 @@ export const CONTENT = {
       workLabel: 'Featured work',
       workPending: 'Featured work coming soon',
       cardCta: 'Read Story & View Work',
+      cardCtaPending: 'Profile Coming Soon',
       modal: { close: 'Close', previous: 'Previous Fellow', next: 'Next Fellow', navLabel: 'Browse fellows' },
       people: [
         {
@@ -415,6 +422,15 @@ export const CONTENT = {
           image: ASSETS.alumni.photographer5,
           imagePosition: '50% 30%',
           work: ASSETS.alumni.photographer5Work,
+        },
+        {
+          id: 'photographer-6',
+          name: 'Featured Fulbright Photographer',
+          program: 'Fulbright-García Robles Fellow',
+          bio: 'A sixth Fulbright-García Robles alumni photographer joins the 35th Anniversary Gala Photography Showcase. Their profile and featured work will be added here soon, completing this celebration of binational perspectives and visual storytelling across Mexico and the United States.',
+          image: ASSETS.alumni.photographer6,
+          work: ASSETS.alumni.photographer6Work,
+          pending: true,
         },
       ] as Photographer[],
     },
